@@ -7,7 +7,7 @@ from contextlib import asynccontextmanager
 from app.core.config import settings
 from app.core.database import db_manager
 from app.routes import (
-    auth, achievements, skills, projects, experiences, issuers, uploads
+    auth, achievements, skills, projects, experiences, issuers, uploads, verify, learning_paths
 )
 
 @asynccontextmanager
@@ -55,6 +55,8 @@ app.include_router(projects.router, prefix=api_prefix)
 app.include_router(experiences.router, prefix=api_prefix)
 app.include_router(issuers.router, prefix=api_prefix)
 app.include_router(uploads.router, prefix=api_prefix)
+app.include_router(verify.router, prefix=api_prefix)
+app.include_router(learning_paths.router, prefix=api_prefix)
 
 @app.get("/")
 def root():

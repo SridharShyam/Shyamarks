@@ -1,10 +1,41 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { AlertTriangle, HelpCircle, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, HelpCircle, CheckCircle2, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
 export const SkillCard = ({ skill }) => {
   const ccs = skill.ccs ?? 0;
-  const breakdown = skill.evidence_breakdown || { certifications: 0, projects: 0, experiences: 0, total: 0 };
+  const breakdown = skill.evidence_breakdown || {};
+  const velocity = skill.velocity || 'cooling';
+
+  const velocityConfig = {
+    accelerating: {
+      label: 'Accelerating',
+      icon: TrendingUp,
+      style: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+      tooltip: skill.last_evidence_date
+        ? `Evidence added within last 6 months (${skill.last_evidence_date})`
+        : 'Evidence added within last 6 months',
+    },
+    stable: {
+      label: 'Stable',
+      icon: Minus,
+      style: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+      tooltip: skill.last_evidence_date
+        ? `Last evidence added 6–18 months ago (${skill.last_evidence_date})`
+        : 'Last evidence 6–18 months ago',
+    },
+    cooling: {
+      label: 'Cooling',
+      icon: TrendingDown,
+      style: 'bg-rose-500/15 text-rose-400/80 border-rose-500/30',
+      tooltip: skill.last_evidence_date
+        ? `No evidence added in 18+ months (${skill.last_evidence_date})`
+        : 'No evidence recorded in 18+ months',
+    },
+  };
+
+  const VelConfig = velocityConfig[velocity] || velocityConfig.cooling;
+  const VelIcon = VelConfig.icon;
 
   return (
     <motion.div
@@ -20,10 +51,21 @@ export const SkillCard = ({ skill }) => {
             <span className="text-label text-text-muted">{skill.category}</span>
           </div>
 
-          {/* CCS Score Badge */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 font-mono text-xs font-bold text-accent">
-            <span>CCS:</span>
-            <span className="text-sm">{ccs}</span>
+          <div className="flex flex-col items-end gap-1.5">
+            {/* CCS Score Badge */}
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-accent/10 border border-accent/30 font-mono text-xs font-bold text-accent">
+              <span>CCS:</span>
+              <span className="text-sm">{ccs}</span>
+            </div>
+
+            {/* Velocity Indicator Badge */}
+            <div
+              className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-mono font-semibold border ${VelConfig.style}`}
+              title={VelConfig.tooltip}
+            >
+              <VelIcon className="w-3 h-3" />
+              <span>{VelConfig.label}</span>
+            </div>
           </div>
         </div>
 
@@ -50,10 +92,12 @@ export const SkillCard = ({ skill }) => {
         </div>
 
         {/* Evidence Breakdown Summary */}
-        <div className="flex items-center gap-3 text-xs font-mono text-text-secondary mb-4">
-          <span><strong className="text-accent">{breakdown.certifications}</strong> Certs</span>
-          <span><strong className="text-accent">{breakdown.projects}</strong> Projects</span>
-          <span><strong className="text-accent">{breakdown.experiences}</strong> Exp</span>
+        <div className="flex items-center gap-3 text-xs font-mono text-text-secondary mb-4 flex-wrap">
+          {Object.entries(breakdown).slice(0, 4).map(([key, count]) => (
+            <span key={key}>
+              <strong className="text-accent">{count}</strong> {key}
+            </span>
+          ))}
         </div>
 
         {/* Badges for Derived Flags */}

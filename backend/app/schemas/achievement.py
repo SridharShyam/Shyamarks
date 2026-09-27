@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional, List, Any
 from datetime import datetime
 from enum import Enum
@@ -43,6 +43,10 @@ class AchievementBase(BaseModel):
     featured: bool = False
     slug: Optional[str] = None
     tags: List[str] = []
+    fingerprint: Optional[str] = None
+    narrative_context: Optional[str] = Field(None, max_length=2000)
+    narrative_challenge: Optional[str] = Field(None, max_length=2000)
+    narrative_outcome: Optional[str] = Field(None, max_length=2000)
 
 class AchievementCreate(AchievementBase):
     pass
@@ -68,6 +72,10 @@ class AchievementUpdate(BaseModel):
     featured: Optional[bool] = None
     slug: Optional[str] = None
     tags: Optional[List[str]] = None
+    fingerprint: Optional[str] = None
+    narrative_context: Optional[str] = Field(None, max_length=2000)
+    narrative_challenge: Optional[str] = Field(None, max_length=2000)
+    narrative_outcome: Optional[str] = Field(None, max_length=2000)
 
 class AchievementResponse(AchievementBase):
     id: str

@@ -118,6 +118,21 @@ export const api = {
     return handleResponse(res);
   },
 
+  // Verification & Learning Paths
+  verifyFingerprint: async (fingerprint) => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/verify/${fingerprint}`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  getLearningPaths: async () => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/learning-paths`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(res);
+  },
+
   // Skills
   getSkills: async () => {
     const res = await fetch(`${API_BASE_URL}/api/v1/skills`, {
@@ -276,7 +291,6 @@ export const api = {
     const res = await fetch(`${API_BASE_URL}/api/v1/issuers/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
-      body: JSON.stringify(data),
     });
     return handleResponse(res);
   },

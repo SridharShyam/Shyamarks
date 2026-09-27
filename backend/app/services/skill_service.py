@@ -27,6 +27,8 @@ class SkillService:
             doc["evidence_breadth_gap"] = ccs_info["evidence_breadth_gap"]
             doc["unanchored"] = ccs_info["unanchored"]
             doc["evidence_breakdown"] = ccs_info["evidence_breakdown"]
+            doc["velocity"] = ccs_info.get("velocity", "cooling")
+            doc["last_evidence_date"] = ccs_info.get("last_evidence_date")
             
             enriched_skills.append(doc)
 
@@ -51,6 +53,8 @@ class SkillService:
         doc["evidence_breadth_gap"] = ccs_info["evidence_breadth_gap"]
         doc["unanchored"] = ccs_info["unanchored"]
         doc["evidence_breakdown"] = ccs_info["evidence_breakdown"]
+        doc["velocity"] = ccs_info.get("velocity", "cooling")
+        doc["last_evidence_date"] = ccs_info.get("last_evidence_date")
 
         return doc
 

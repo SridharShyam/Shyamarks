@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { QRCodeSVG } from 'qrcode.react';
+import { motion } from 'framer-motion';
 import {
   ArrowLeft,
   Calendar,
@@ -14,17 +15,22 @@ import {
   FileText,
   Clock,
   Copy,
-  Check
+  Check,
+  BookOpen,
+  Key
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { CertificateLightbox } from '../../components/ui/CertificateLightbox';
 import { useToast } from '../../context/ToastContext';
+import { fadeUp } from '../../lib/animations';
 
 export const AchievementDetailPage = () => {
   const { slug } = useParams();
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedFp, setCopiedFp] = useState(false);
+  const [copiedVerifyUrl, setCopiedVerifyUrl] = useState(false);
   const { showToast } = useToast();
 
   const { data: achievement, isLoading, error } = useQuery({
@@ -47,6 +53,23 @@ export const AchievementDetailPage = () => {
     setCopiedLink(true);
     showToast('Verification link copied to clipboard!', 'success');
     setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const handleCopyFingerprint = () => {
+    if (!achievement?.fingerprint) return;
+    navigator.clipboard.writeText(achievement.fingerprint);
+    setCopiedFp(true);
+    showToast('Fingerprint copied!', 'success');
+    setTimeout(() => setCopiedFp(false), 2000);
+  };
+
+  const handleCopyVerifyUrl = () => {
+    if (!achievement?.fingerprint) return;
+    const verifyUrl = `${window.location.origin}/verify/${achievement.fingerprint}`;
+    navigator.clipboard.writeText(verifyUrl);
+    setCopiedVerifyUrl(true);
+    showToast('Verification URL copied!', 'success');
+    setTimeout(() => setCopiedVerifyUrl(false), 2000);
   };
 
   if (isLoading) {
@@ -75,8 +98,16 @@ export const AchievementDetailPage = () => {
     );
   }
 
-  const currentUrl = window.location.href;
   const isPdf = achievement.file_type?.toLowerCase() === 'pdf' || achievement.file_url?.toLowerCase().endsWith('.pdf');
+  const verifyUrl = achievement.fingerprint 
+    ? `${window.location.origin}/verify/${achievement.fingerprint}` 
+    : (achievement.verification_url || window.location.href);
+
+  const formattedFp = achievement.fingerprint
+    ? `${achievement.fingerprint.slice(0, 6)} · ${achievement.fingerprint.slice(6)}`
+    : null;
+
+  const hasStory = achievement.narrative_context || achievement.narrative_challenge || achievement.narrative_outcome;
 
   return (
     <div className="max-w-5xl mx-auto space-y-8 pb-16">
@@ -128,7 +159,7 @@ export const AchievementDetailPage = () => {
 
           {/* Verification QR Code Card */}
           <div className="bg-surface-elevated border border-border p-4 rounded-xl flex flex-col items-center gap-3 shrink-0 self-start sm:self-auto shadow-md">
-            <QRCodeSVG value={achievement.verification_url || currentUrl} size={100} bgColor="#111118" fgColor="#6C63FF" />
+            <QRCodeSVG value={verifyUrl} size={100} bgColor="#111118" fgColor="#6C63FF" />
             <span className="text-label text-text-muted">Scan to verify</span>
             <button
               onClick={handleCopyLink}
@@ -140,7 +171,7 @@ export const AchievementDetailPage = () => {
           </div>
         </div>
 
-        {/* Metadata Row with Copyable Credential ID Pill */}
+        {/* Metadata Row */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-4 border-t border-border text-xs">
           <div className="flex items-center gap-2 text-text-secondary">
             <Calendar className="w-4 h-4 text-accent" />
@@ -177,6 +208,44 @@ export const AchievementDetailPage = () => {
             </div>
           )}
         </div>
+
+        {/* Verification Fingerprint Section */}
+        {formattedFp && (
+          <div className="bg-surface-elevated/70 border border-border/80 rounded-xl p-4 text-xs font-mono space-y-3">
+            <div className="flex items-center gap-2 text-accent font-bold uppercase tracking-wider text-[11px]">
+              <Key className="w-4 h-4" />
+              <span>Verification Fingerprint</span>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-lg border border-border/50">
+              <div>
+                <span className="text-text-muted block text-[10px] uppercase">Fingerprint Hash</span>
+                <span className="text-text-primary font-bold text-sm tracking-widest">{formattedFp}</span>
+              </div>
+              <button
+                onClick={handleCopyFingerprint}
+                className="px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface border border-border text-text-secondary hover:text-text-primary text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto transition-colors"
+              >
+                {copiedFp ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedFp ? 'Copied!' : 'Copy Fingerprint'}</span>
+              </button>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-surface p-3 rounded-lg border border-border/50">
+              <div className="truncate">
+                <span className="text-text-muted block text-[10px] uppercase">Verification URL</span>
+                <span className="text-accent text-xs font-sans truncate">{verifyUrl}</span>
+              </div>
+              <button
+                onClick={handleCopyVerifyUrl}
+                className="px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface border border-border text-text-secondary hover:text-text-primary text-xs font-semibold flex items-center gap-1.5 self-start sm:self-auto shrink-0 transition-colors"
+              >
+                {copiedVerifyUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedVerifyUrl ? 'Copied!' : 'Copy URL'}</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Action Buttons */}
         <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -223,6 +292,59 @@ export const AchievementDetailPage = () => {
           </div>
         )}
       </div>
+
+      {/* Story Behind This Section */}
+      {hasStory && (
+        <motion.div
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-50px' }}
+          className="glass-card rounded-2xl p-6 sm:p-8 space-y-6"
+        >
+          <div className="flex items-center gap-2.5 border-b border-border pb-4">
+            <BookOpen className="w-5 h-5 text-accent" />
+            <h3 className="font-heading text-h3 font-bold text-text-primary">
+              Story Behind This Achievement
+            </h3>
+          </div>
+
+          <div className="space-y-6 font-sans">
+            {achievement.narrative_context && (
+              <div className="border-l-4 border-accent pl-4 py-1 space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-accent block font-mono">
+                  Context
+                </span>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {achievement.narrative_context}
+                </p>
+              </div>
+            )}
+
+            {achievement.narrative_challenge && (
+              <div className="border-l-4 border-amber-400 pl-4 py-1 space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-400 block font-mono">
+                  Challenge
+                </span>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {achievement.narrative_challenge}
+                </p>
+              </div>
+            )}
+
+            {achievement.narrative_outcome && (
+              <div className="border-l-4 border-emerald-400 pl-4 py-1 space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block font-mono">
+                  Outcome
+                </span>
+                <p className="text-sm text-text-secondary leading-relaxed">
+                  {achievement.narrative_outcome}
+                </p>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
 
       {/* Certificate Embedded Preview Container */}
       {(achievement.file_url || achievement.preview_image_url) && (

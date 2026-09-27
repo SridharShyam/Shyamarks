@@ -24,7 +24,9 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
         evidence_types: list of unique types,
         breadth_gap: bool,
         unanchored: bool,
-        breakdown: dict of type->count
+        breakdown: dict of type->count,
+        velocity: str ("accelerating" | "stable" | "cooling"),
+        last_evidence_date: str or None
     }
     """
     if not achievements:
@@ -33,7 +35,9 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
             "evidence_types": [],
             "breadth_gap": False,
             "unanchored": True,
-            "breakdown": {}
+            "breakdown": {},
+            "velocity": "cooling",
+            "last_evidence_date": None
         }
 
     seen_types = set()
@@ -74,14 +78,20 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
     elif len(seen_types) >= 3:
         breadth_bonus = 10
 
-    # Recency bonus
+    # Recency bonus & Velocity calculation
     recency_bonus = 0
     if most_recent_date:
         days_since = (today - most_recent_date).days
         if days_since <= 180:
             recency_bonus = 15
-        elif days_since <= 365:
+            velocity = "accelerating"
+        elif days_since <= 540:
             recency_bonus = 10
+            velocity = "stable"
+        else:
+            velocity = "cooling"
+    else:
+        velocity = "cooling"
 
     raw_score = base_score + breadth_bonus + recency_bonus
     final_score = min(raw_score, 100)
@@ -99,7 +109,9 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
         "evidence_types": list(seen_types),
         "breadth_gap": breadth_gap,
         "unanchored": unanchored,
-        "breakdown": breakdown
+        "breakdown": breakdown,
+        "velocity": velocity,
+        "last_evidence_date": most_recent_date.isoformat() if most_recent_date else None
     }
 
 def calculate_ccs_for_skill(
@@ -119,5 +131,7 @@ def calculate_ccs_for_skill(
         "ccs": ccs_result["score"],
         "evidence_breadth_gap": ccs_result["breadth_gap"],
         "unanchored": ccs_result["unanchored"],
-        "evidence_breakdown": ccs_result["breakdown"]
+        "evidence_breakdown": ccs_result["breakdown"],
+        "velocity": ccs_result["velocity"],
+        "last_evidence_date": ccs_result["last_evidence_date"]
     }

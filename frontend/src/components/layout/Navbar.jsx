@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Award, Layers, FolderGit2, Calendar, Sun, Moon, Terminal } from 'lucide-react';
+import { ShieldCheck, Award, Layers, Compass, FolderGit2, Calendar, Sun, Moon, Terminal } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export const Navbar = () => {
@@ -10,6 +10,7 @@ export const Navbar = () => {
   const navItems = [
     { label: 'Achievements', path: '/achievements', icon: Award },
     { label: 'Skills', path: '/skills', icon: Layers },
+    { label: 'Paths', path: '/learning-paths', icon: Compass },
     { label: 'Projects', path: '/projects', icon: FolderGit2 },
     { label: 'Timeline', path: '/timeline', icon: Calendar },
   ];

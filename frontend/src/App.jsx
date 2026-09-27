@@ -20,6 +20,8 @@ import { AchievementDetailPage } from './pages/AchievementDetail/AchievementDeta
 import { SkillsPage } from './pages/Skills/SkillsPage';
 import { ProjectsPage } from './pages/Projects/ProjectsPage';
 import { TimelinePage } from './pages/Timeline/TimelinePage';
+import { LearningPathsPage } from './pages/LearningPaths/LearningPathsPage';
+import { VerificationPage } from './pages/Verification/VerificationPage';
 
 // Studio Pages (formerly Admin)
 import { AdminLoginPage } from './pages/Admin/AdminLoginPage';
@@ -60,6 +62,8 @@ const AnimatedRoutes = () => {
             <Route path="/achievements" element={<AchievementsPage />} />
             <Route path="/achievements/:slug" element={<AchievementDetailPage />} />
             <Route path="/skills" element={<SkillsPage />} />
+            <Route path="/learning-paths" element={<LearningPathsPage />} />
+            <Route path="/verify/:fingerprint" element={<VerificationPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
           </Route>

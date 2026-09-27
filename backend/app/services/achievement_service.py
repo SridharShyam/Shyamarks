@@ -3,9 +3,23 @@ from typing import Optional, List, Dict, Any
 from bson import ObjectId
 from app.core.database import get_db
 from app.utils.slug import slugify
+from app.utils.fingerprint import generate_fingerprint
 from app.utils.validators import validate_object_id, serialize_mongo_doc
 
 class AchievementService:
+    @staticmethod
+    def _resolve_issuer_name(issuer_id: Optional[str], db) -> str:
+        if not issuer_id:
+            return ""
+        try:
+            oid = ObjectId(issuer_id) if ObjectId.is_valid(issuer_id) else None
+            if oid:
+                doc = db.issuers.find_one({"_id": oid})
+                return doc.get("name", "") if doc else ""
+        except Exception:
+            pass
+        return ""
+
     @staticmethod
     def populate_relations(achievement: dict, db) -> dict:
         doc = serialize_mongo_doc(achievement)
@@ -79,7 +93,10 @@ class AchievementService:
             query["$or"] = [
                 {"title": {"$regex": search, "$options": "i"}},
                 {"description": {"$regex": search, "$options": "i"}},
-                {"tags": {"$regex": search, "$options": "i"}}
+                {"tags": {"$regex": search, "$options": "i"}},
+                {"narrative_context": {"$regex": search, "$options": "i"}},
+                {"narrative_challenge": {"$regex": search, "$options": "i"}},
+                {"narrative_outcome": {"$regex": search, "$options": "i"}}
             ]
 
         if type_filter:
@@ -144,6 +161,15 @@ class AchievementService:
         return AchievementService.populate_relations(doc, db)
 
     @staticmethod
+    def get_by_fingerprint(fingerprint: str) -> Optional[dict]:
+        db = get_db()
+        query = {"fingerprint": fingerprint, "visibility": "public"}
+        doc = db.achievements.find_one(query)
+        if not doc:
+            return None
+        return AchievementService.populate_relations(doc, db)
+
+    @staticmethod
     def create_achievement(data: dict) -> dict:
         db = get_db()
         now = datetime.now(timezone.utc)
@@ -160,6 +186,15 @@ class AchievementService:
             data["slug"] = f"{base_slug}-{counter}"
             counter += 1
 
+        # Compute fingerprint
+        issuer_name = AchievementService._resolve_issuer_name(data.get("issuer_id"), db)
+        data["fingerprint"] = generate_fingerprint(
+            title=data.get("title", ""),
+            issuer_name=issuer_name,
+            issued_date=data.get("issued_date", ""),
+            credential_id=data.get("credential_id") or ""
+        )
+
         res = db.achievements.insert_one(data)
         created_doc = db.achievements.find_one({"_id": res.inserted_id})
         return AchievementService.populate_relations(created_doc, db)
@@ -168,12 +203,14 @@ class AchievementService:
     def update_achievement(achievement_id: str, update_data: dict) -> Optional[dict]:
         db = get_db()
         oid = validate_object_id(achievement_id)
+        existing = db.achievements.find_one({"_id": oid})
+        if not existing:
+            return None
         
         # Clean null update keys
         clean_update = {k: v for k, v in update_data.items() if v is not None}
         if not clean_update:
-            existing = db.achievements.find_one({"_id": oid})
-            return AchievementService.populate_relations(existing, db) if existing else None
+            return AchievementService.populate_relations(existing, db)
 
         clean_update["updated_at"] = datetime.now(timezone.utc)
 
@@ -188,6 +225,16 @@ class AchievementService:
                 slug = f"{base_slug}-{counter}"
                 counter += 1
             clean_update["slug"] = slug
+
+        # Check if fingerprint re-computation is needed
+        fp_keys = {"title", "issuer_id", "issued_date", "credential_id"}
+        if any(k in clean_update for k in fp_keys):
+            title = clean_update.get("title", existing.get("title", ""))
+            issuer_id = clean_update.get("issuer_id", existing.get("issuer_id"))
+            issued_date = clean_update.get("issued_date", existing.get("issued_date", ""))
+            credential_id = clean_update.get("credential_id", existing.get("credential_id", "")) or ""
+            issuer_name = AchievementService._resolve_issuer_name(issuer_id, db)
+            clean_update["fingerprint"] = generate_fingerprint(title, issuer_name, issued_date, credential_id)
 
         db.achievements.update_one({"_id": oid}, {"$set": clean_update})
         updated_doc = db.achievements.find_one({"_id": oid})

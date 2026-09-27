@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { ArrowLeft, Upload, Save, Check, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Upload, Save, Check, AlertCircle, ChevronDown, ChevronUp, BookOpen } from 'lucide-react';
 import { api } from '../../services/api';
 
 const ACHIEVEMENT_TYPES = [
@@ -46,6 +46,12 @@ export const AdminAchievementFormPage = () => {
   const [featured, setFeatured] = useState(false);
   const [slug, setSlug] = useState('');
   const [tagsInput, setTagsInput] = useState('');
+
+  // Story / Narrative states
+  const [isStoryExpanded, setIsStoryExpanded] = useState(false);
+  const [narrativeContext, setNarrativeContext] = useState('');
+  const [narrativeChallenge, setNarrativeChallenge] = useState('');
+  const [narrativeOutcome, setNarrativeOutcome] = useState('');
 
   const [uploading, setUploading] = useState(false);
   const [formError, setFormError] = useState('');
@@ -100,6 +106,12 @@ export const AdminAchievementFormPage = () => {
       setFeatured(existingAchievement.featured || false);
       setSlug(existingAchievement.slug || '');
       setTagsInput(existingAchievement.tags ? existingAchievement.tags.join(', ') : '');
+      setNarrativeContext(existingAchievement.narrative_context || '');
+      setNarrativeChallenge(existingAchievement.narrative_challenge || '');
+      setNarrativeOutcome(existingAchievement.narrative_outcome || '');
+      if (existingAchievement.narrative_context || existingAchievement.narrative_challenge || existingAchievement.narrative_outcome) {
+        setIsStoryExpanded(true);
+      }
     }
   }, [existingAchievement]);
 
@@ -171,6 +183,9 @@ export const AdminAchievementFormPage = () => {
       featured,
       slug: slug || undefined,
       tags,
+      narrative_context: narrativeContext || undefined,
+      narrative_challenge: narrativeChallenge || undefined,
+      narrative_outcome: narrativeOutcome || undefined,
     };
 
     saveMutation.mutate(payload);
@@ -311,6 +326,79 @@ export const AdminAchievementFormPage = () => {
               className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
             />
           </div>
+        </div>
+
+        {/* Collapsible Add Story / Narrative Panel */}
+        <div className="border border-surface-700/70 rounded-xl overflow-hidden bg-surface-900/40">
+          <button
+            type="button"
+            onClick={() => setIsStoryExpanded(!isStoryExpanded)}
+            className="w-full px-5 py-3.5 flex items-center justify-between text-left text-xs font-semibold text-brand-300 hover:text-white hover:bg-surface-800/60 transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-brand-400" />
+              <span>Add Narrative / Story Behind This (Optional)</span>
+            </div>
+            {isStoryExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          </button>
+
+          {isStoryExpanded && (
+            <div className="p-5 space-y-4 border-t border-surface-700/60 bg-surface-900/80">
+              {/* Context */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="font-semibold text-slate-300">Context</label>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    {2000 - narrativeContext.length} chars remaining
+                  </span>
+                </div>
+                <textarea
+                  rows={3}
+                  maxLength={2000}
+                  value={narrativeContext}
+                  onChange={(e) => setNarrativeContext(e.target.value)}
+                  placeholder="What was happening at this point in your journey?"
+                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+
+              {/* Challenge */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="font-semibold text-slate-300">Challenge</label>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    {2000 - narrativeChallenge.length} chars remaining
+                  </span>
+                </div>
+                <textarea
+                  rows={3}
+                  maxLength={2000}
+                  value={narrativeChallenge}
+                  onChange={(e) => setNarrativeChallenge(e.target.value)}
+                  placeholder="What made this achievement difficult or meaningful?"
+                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+
+              {/* Outcome */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center text-xs">
+                  <label className="font-semibold text-slate-300">Outcome</label>
+                  <span className="text-[10px] font-mono text-slate-500">
+                    {2000 - narrativeOutcome.length} chars remaining
+                  </span>
+                </div>
+                <textarea
+                  rows={3}
+                  maxLength={2000}
+                  value={narrativeOutcome}
+                  onChange={(e) => setNarrativeOutcome(e.target.value)}
+                  placeholder="What changed after this — skill, direction, or mindset?"
+                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                />
+              </div>
+            </div>
+          )}
         </div>
 
         {/* File Upload Section */}

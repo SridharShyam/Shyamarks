@@ -24,6 +24,8 @@ class SkillResponse(SkillBase):
     evidence_breadth_gap: Optional[bool] = False
     unanchored: Optional[bool] = False
     evidence_breakdown: Optional[Dict[str, Any]] = None
+    velocity: Optional[str] = "cooling"
+    last_evidence_date: Optional[str] = None
 
     class Config:
         from_attributes = True
