@@ -35,10 +35,15 @@
     --error: #F43F5E;
   }
 
+  ::selection {
+    background-color: var(--accent);
+    color: #ffffff;
+  }
+
   body {
     background-color: var(--bg-background);
     color: var(--text-primary);
-    @apply antialiased min-h-screen font-sans selection:bg-accent selection:text-white transition-colors duration-300 overflow-x-hidden;
+    @apply antialiased min-h-screen font-sans transition-colors duration-300 overflow-x-hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -134,4 +139,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--accent);
 }
-
