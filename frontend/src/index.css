@@ -49,7 +49,11 @@ html.light .bg-glow-radial {
 }
 
 .glass-card-hover {
-  @apply glass-card transition-all duration-300 hover:border-brand-400/50 hover:shadow-glow-cyan hover:-translate-y-0.5;
+  @apply glass-card transition-all duration-300 hover:border-brand-400/50 hover:-translate-y-0.5;
+}
+
+.glass-card-hover:hover {
+  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
 }
 
 /* Custom Scrollbars */
