@@ -65,13 +65,15 @@ export const AdminIssuersPage = () => {
     });
   };
 
+  const inputStyles = "w-full bg-surface-elevated border border-border text-text-primary placeholder:text-text-muted rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-accent text-xs transition-colors";
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
       {/* Form Sidebar */}
       <div className="space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl p-6 shadow-xl space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Building2 className="w-5 h-5 text-amber-400" />
+        <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-xl space-y-4">
+          <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-accent" />
             {editingIssuer ? 'Edit Issuer' : 'Create New Issuer'}
           </h2>
 
@@ -84,36 +86,36 @@ export const AdminIssuersPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Issuer / Organization Name *</label>
+              <label className="font-semibold text-text-primary">Issuer / Organization Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Amazon Web Services, Coursera"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Website URL</label>
+              <label className="font-semibold text-text-primary">Website URL</label>
               <input
                 type="url"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Logo Image URL</label>
+              <label className="font-semibold text-text-primary">Logo Image URL</label>
               <input
                 type="url"
                 value={logoUrl}
                 onChange={(e) => setLogoUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
@@ -122,7 +124,7 @@ export const AdminIssuersPage = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-1/2 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 text-slate-300 font-semibold"
+                  className="w-1/2 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-card text-text-muted hover:text-text-primary font-semibold border border-border"
                 >
                   Cancel
                 </button>
@@ -130,7 +132,7 @@ export const AdminIssuersPage = () => {
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-500 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-amber-600/30"
+                className="flex-1 py-2.5 rounded-xl bg-accent hover:brightness-110 text-slate-950 font-bold flex items-center justify-center gap-2 shadow-lg shadow-accent/20"
               >
                 <Plus className="w-4 h-4" />
                 <span>{editingIssuer ? 'Update Issuer' : 'Create Issuer'}</span>

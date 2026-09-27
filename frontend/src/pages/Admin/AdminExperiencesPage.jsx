@@ -101,13 +101,15 @@ export const AdminExperiencesPage = () => {
     }
   };
 
+  const inputStyles = "w-full bg-surface-elevated border border-border text-text-primary placeholder:text-text-muted rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-accent text-xs transition-colors";
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
       {/* Form Sidebar */}
       <div className="space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl p-6 shadow-xl space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Briefcase className="w-5 h-5 text-emerald-400" />
+        <div className="bg-surface-card border border-border rounded-2xl p-6 shadow-xl space-y-4">
+          <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+            <Briefcase className="w-5 h-5 text-accent" />
             {editingExp ? 'Edit Experience' : 'Create New Experience'}
           </h2>
 
@@ -120,94 +122,94 @@ export const AdminExperiencesPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Title / Headline *</label>
+              <label className="font-semibold text-text-primary">Title / Headline *</label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Software Engineer Intern"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Organization *</label>
+                <label className="font-semibold text-text-primary">Organization *</label>
                 <input
                   type="text"
                   required
                   value={organization}
                   onChange={(e) => setOrganization(e.target.value)}
                   placeholder="e.g. Acme Corp"
-                  className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+                  className={inputStyles}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Role *</label>
+                <label className="font-semibold text-text-primary">Role *</label>
                 <input
                   type="text"
                   required
                   value={role}
                   onChange={(e) => setRole(e.target.value)}
                   placeholder="e.g. Backend Developer"
-                  className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+                  className={inputStyles}
                 />
               </div>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">Start Date *</label>
+                <label className="font-semibold text-text-primary">Start Date *</label>
                 <input
                   type="date"
                   required
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full bg-surface-900 border border-surface-700 text-slate-100 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500"
+                  className={inputStyles}
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-300">End Date</label>
+                <label className="font-semibold text-text-primary">End Date</label>
                 <input
                   type="date"
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
-                  className="w-full bg-surface-900 border border-surface-700 text-slate-100 rounded-xl px-3 py-2 focus:outline-none focus:border-brand-500"
+                  className={inputStyles}
                 />
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Type *</label>
+              <label className="font-semibold text-text-primary">Type *</label>
               <select
                 value={type}
                 onChange={(e) => setType(e.target.value)}
-                className="w-full bg-surface-900 border border-surface-700 text-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               >
                 {EXPERIENCE_TYPES.map((t) => (
-                  <option key={t} value={t}>{t}</option>
+                  <option key={t} value={t} className="bg-surface-elevated text-text-primary">{t}</option>
                 ))}
               </select>
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Description *</label>
+              <label className="font-semibold text-text-primary">Description *</label>
               <textarea
                 required
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Key responsibilities & accomplishments..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                className={`${inputStyles} p-3`}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Link Associated Skills</label>
-              <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-surface-900 rounded-xl border border-surface-700">
+              <label className="font-semibold text-text-primary">Link Associated Skills</label>
+              <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-surface-elevated rounded-xl border border-border">
                 {skills?.map((s) => {
                   const selected = selectedSkillIds.includes(s.id);
                   return (
@@ -217,8 +219,8 @@ export const AdminExperiencesPage = () => {
                       onClick={() => toggleSkill(s.id)}
                       className={`px-2.5 py-0.5 rounded text-[11px] font-medium border transition-colors ${
                         selected
-                          ? 'bg-emerald-600 text-white border-emerald-500'
-                          : 'bg-surface-800 text-slate-400 border-surface-700 hover:text-slate-200'
+                          ? 'bg-accent text-slate-950 font-bold border-accent'
+                          : 'bg-surface-card text-text-muted border-border hover:text-text-primary'
                       }`}
                     >
                       {s.name}
@@ -233,7 +235,7 @@ export const AdminExperiencesPage = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-1/2 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 text-slate-300 font-semibold"
+                  className="w-1/2 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface-card text-text-muted hover:text-text-primary font-semibold border border-border"
                 >
                   Cancel
                 </button>
@@ -241,7 +243,7 @@ export const AdminExperiencesPage = () => {
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/30"
+                className="flex-1 py-2.5 rounded-xl bg-accent hover:brightness-110 text-slate-950 font-bold flex items-center justify-center gap-2 shadow-lg shadow-accent/20"
               >
                 <Plus className="w-4 h-4" />
                 <span>{editingExp ? 'Update Experience' : 'Create Experience'}</span>

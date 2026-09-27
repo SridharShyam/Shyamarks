@@ -69,18 +69,21 @@ export const AdminSkillsPage = () => {
     }
   };
 
+  const inputStyles = "w-full bg-surface-elevated border border-border text-text-primary placeholder:text-text-muted rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-accent text-xs transition-colors";
+  const labelStyles = "font-semibold text-text-primary text-xs block mb-1";
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
       {/* Form Sidebar */}
       <div className="space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl p-6 shadow-xl space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <Layers className="w-5 h-5 text-purple-400" />
+        <div className="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+          <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+            <Layers className="w-5 h-5 text-accent" />
             {editingSkill ? 'Edit Skill' : 'Create New Skill'}
           </h2>
 
           {errorMsg && (
-            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3 rounded-xl text-xs flex items-center gap-2">
+            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-xl text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -88,37 +91,37 @@ export const AdminSkillsPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Skill Name *</label>
+              <label className={labelStyles}>Skill Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Python, FastAPI, Docker"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Category *</label>
+              <label className={labelStyles}>Category *</label>
               <input
                 type="text"
                 required
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 placeholder="e.g. Backend, Cloud, DevOps"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Description (Optional)</label>
+              <label className={labelStyles}>Description (Optional)</label>
               <textarea
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Brief summary of domain expertise..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                className={`${inputStyles} p-3`}
               />
             </div>
 
@@ -127,7 +130,7 @@ export const AdminSkillsPage = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-1/2 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 text-slate-300 font-semibold"
+                  className="w-1/2 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface text-text-secondary font-semibold"
                 >
                   Cancel
                 </button>
@@ -135,7 +138,7 @@ export const AdminSkillsPage = () => {
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-purple-600/30"
+                className="flex-1 py-2.5 rounded-xl bg-accent hover:brightness-110 text-white font-semibold flex items-center justify-center gap-2 shadow-accent-glow"
               >
                 <Plus className="w-4 h-4" />
                 <span>{editingSkill ? 'Update Skill' : 'Create Skill'}</span>
@@ -147,9 +150,9 @@ export const AdminSkillsPage = () => {
 
       {/* Skills Table List */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl overflow-hidden shadow-xl">
+        <div className="glass-card rounded-2xl overflow-hidden shadow-xl">
           <table className="w-full text-left text-xs">
-            <thead className="bg-surface-900/80 border-b border-surface-700 text-slate-400 uppercase font-mono">
+            <thead className="bg-surface-elevated border-b border-border text-text-muted uppercase font-mono">
               <tr>
                 <th className="px-6 py-4">Skill Name</th>
                 <th className="px-6 py-4">Category</th>
@@ -157,41 +160,41 @@ export const AdminSkillsPage = () => {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-700/60 text-slate-200">
+            <tbody className="divide-y divide-border text-text-primary">
               {isLoading ? (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-text-muted">
                     Loading skills...
                   </td>
                 </tr>
               ) : skills && skills.length > 0 ? (
                 skills.map((skill) => (
-                  <tr key={skill.id} className="hover:bg-surface-700/40 transition-colors">
+                  <tr key={skill.id} className="hover:bg-surface-elevated/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-bold text-white">{skill.name}</div>
+                      <div className="font-bold text-text-primary">{skill.name}</div>
                       {skill.description && (
-                        <p className="text-[11px] text-slate-400 line-clamp-1">{skill.description}</p>
+                        <p className="text-[11px] text-text-muted line-clamp-1">{skill.description}</p>
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-accent/10 text-accent border border-accent/20">
                         {skill.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-center font-mono font-bold text-brand-300">
+                    <td className="px-6 py-4 text-center font-mono font-bold text-accent">
                       {skill.ccs ?? 0}
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleEditClick(skill)}
-                          className="p-1.5 rounded-lg bg-surface-900 border border-surface-700 text-slate-400 hover:text-white"
+                          className="p-1.5 rounded-lg bg-surface-elevated border border-border text-text-secondary hover:text-text-primary"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDelete(skill.id, skill.name)}
-                          className="p-1.5 rounded-lg bg-surface-900 border border-surface-700 text-slate-400 hover:text-rose-400"
+                          className="p-1.5 rounded-lg bg-surface-elevated border border-border text-text-secondary hover:text-rose-400"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -201,7 +204,7 @@ export const AdminSkillsPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={4} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={4} className="px-6 py-12 text-center text-text-muted">
                     No skills created yet.
                   </td>
                 </tr>

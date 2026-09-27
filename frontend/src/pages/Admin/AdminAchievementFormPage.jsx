@@ -199,54 +199,57 @@ export const AdminAchievementFormPage = () => {
     }
   };
 
+  const inputStyles = "w-full bg-surface-elevated border border-border text-text-primary placeholder:text-text-muted text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-accent transition-colors";
+  const labelStyles = "text-xs font-semibold text-text-primary block mb-1";
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-16">
       {/* Top Header */}
       <div className="flex items-center justify-between">
         <Link
           to="/admin/achievements"
-          className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Achievements List</span>
         </Link>
-        <h1 className="text-xl font-bold text-white">
+        <h1 className="text-xl font-bold text-text-primary">
           {isEditMode ? 'Edit Achievement' : 'Create New Achievement'}
         </h1>
       </div>
 
       {formError && (
-        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 rounded-xl p-4 text-xs flex items-center gap-2">
+        <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl p-4 text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{formError}</span>
         </div>
       )}
 
       {/* Main Form Card */}
-      <form onSubmit={handleSubmit} className="bg-surface-800/80 border border-surface-700/80 rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-md">
+      <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-6 sm:p-8 space-y-6 shadow-xl backdrop-blur-md">
         {/* Title & Type */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="sm:col-span-2 space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Title *</label>
+            <label className={labelStyles}>Title *</label>
             <input
               type="text"
               required
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. AWS Certified Solutions Architect"
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Type *</label>
+            <label className={labelStyles}>Type *</label>
             <select
               value={type}
               onChange={(e) => setType(e.target.value)}
-              className="w-full bg-surface-900 border border-surface-700 text-slate-200 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             >
               {ACHIEVEMENT_TYPES.map((t) => (
-                <option key={t} value={t}>{t}</option>
+                <option key={t} value={t} className="bg-surface-elevated text-text-primary">{t}</option>
               ))}
             </select>
           </div>
@@ -255,100 +258,100 @@ export const AdminAchievementFormPage = () => {
         {/* Issuer & Dates */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Issuer</label>
+            <label className={labelStyles}>Issuer</label>
             <select
               value={issuerId}
               onChange={(e) => setIssuerId(e.target.value)}
-              className="w-full bg-surface-900 border border-surface-700 text-slate-200 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             >
-              <option value="">No Issuer Selected</option>
+              <option value="" className="bg-surface-elevated text-text-primary">No Issuer Selected</option>
               {issuers?.map((issuer) => (
-                <option key={issuer.id} value={issuer.id}>{issuer.name}</option>
+                <option key={issuer.id} value={issuer.id} className="bg-surface-elevated text-text-primary">{issuer.name}</option>
               ))}
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Issued Date (YYYY-MM-DD) *</label>
+            <label className={labelStyles}>Issued Date (YYYY-MM-DD) *</label>
             <input
               type="date"
               required
               value={issuedDate}
               onChange={(e) => setIssuedDate(e.target.value)}
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Expiry Date (Optional)</label>
+            <label className={labelStyles}>Expiry Date (Optional)</label>
             <input
               type="date"
               value={expiryDate}
               onChange={(e) => setExpiryDate(e.target.value)}
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             />
           </div>
         </div>
 
         {/* Description */}
         <div className="space-y-1.5">
-          <label className="text-xs font-semibold text-slate-300">Description & Evidence Scope *</label>
+          <label className={labelStyles}>Description & Evidence Scope *</label>
           <textarea
             required
             rows={4}
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe what was accomplished, topics covered, or project details..."
-            className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-4 focus:outline-none focus:border-brand-500"
+            className={`${inputStyles} p-4`}
           />
         </div>
 
         {/* Credentials & URLs */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Credential ID</label>
+            <label className={labelStyles}>Credential ID</label>
             <input
               type="text"
               value={credentialId}
               onChange={(e) => setCredentialId(e.target.value)}
               placeholder="e.g. AWS-12345678"
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500 font-mono"
+              className={`${inputStyles} font-mono`}
             />
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Verification URL</label>
+            <label className={labelStyles}>Verification URL</label>
             <input
               type="url"
               value={verificationUrl}
               onChange={(e) => setVerificationUrl(e.target.value)}
               placeholder="https://credly.com/verify/..."
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             />
           </div>
         </div>
 
         {/* Collapsible Add Story / Narrative Panel */}
-        <div className="border border-surface-700/70 rounded-xl overflow-hidden bg-surface-900/40">
+        <div className="border border-border rounded-xl overflow-hidden bg-surface-elevated/50">
           <button
             type="button"
             onClick={() => setIsStoryExpanded(!isStoryExpanded)}
-            className="w-full px-5 py-3.5 flex items-center justify-between text-left text-xs font-semibold text-brand-300 hover:text-white hover:bg-surface-800/60 transition-colors"
+            className="w-full px-5 py-3.5 flex items-center justify-between text-left text-xs font-semibold text-accent hover:text-accent/80 hover:bg-surface-elevated transition-colors"
           >
             <div className="flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-brand-400" />
+              <BookOpen className="w-4 h-4 text-accent" />
               <span>Add Narrative / Story Behind This (Optional)</span>
             </div>
             {isStoryExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
           </button>
 
           {isStoryExpanded && (
-            <div className="p-5 space-y-4 border-t border-surface-700/60 bg-surface-900/80">
+            <div className="p-5 space-y-4 border-t border-border bg-surface-elevated/80">
               {/* Context */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
-                  <label className="font-semibold text-slate-300">Context</label>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <label className={labelStyles}>Context</label>
+                  <span className="text-[10px] font-mono text-text-muted">
                     {2000 - narrativeContext.length} chars remaining
                   </span>
                 </div>
@@ -358,15 +361,15 @@ export const AdminAchievementFormPage = () => {
                   value={narrativeContext}
                   onChange={(e) => setNarrativeContext(e.target.value)}
                   placeholder="What was happening at this point in your journey?"
-                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                  className={`${inputStyles} p-3`}
                 />
               </div>
 
               {/* Challenge */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
-                  <label className="font-semibold text-slate-300">Challenge</label>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <label className={labelStyles}>Challenge</label>
+                  <span className="text-[10px] font-mono text-text-muted">
                     {2000 - narrativeChallenge.length} chars remaining
                   </span>
                 </div>
@@ -376,15 +379,15 @@ export const AdminAchievementFormPage = () => {
                   value={narrativeChallenge}
                   onChange={(e) => setNarrativeChallenge(e.target.value)}
                   placeholder="What made this achievement difficult or meaningful?"
-                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                  className={`${inputStyles} p-3`}
                 />
               </div>
 
               {/* Outcome */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center text-xs">
-                  <label className="font-semibold text-slate-300">Outcome</label>
-                  <span className="text-[10px] font-mono text-slate-500">
+                  <label className={labelStyles}>Outcome</label>
+                  <span className="text-[10px] font-mono text-text-muted">
                     {2000 - narrativeOutcome.length} chars remaining
                   </span>
                 </div>
@@ -394,7 +397,7 @@ export const AdminAchievementFormPage = () => {
                   value={narrativeOutcome}
                   onChange={(e) => setNarrativeOutcome(e.target.value)}
                   placeholder="What changed after this — skill, direction, or mindset?"
-                  className="w-full bg-surface-950 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                  className={`${inputStyles} p-3`}
                 />
               </div>
             </div>
@@ -402,13 +405,13 @@ export const AdminAchievementFormPage = () => {
         </div>
 
         {/* File Upload Section */}
-        <div className="space-y-2 border-t border-b border-surface-700/60 py-4">
-          <label className="text-xs font-semibold text-slate-300 block">
+        <div className="space-y-2 border-t border-b border-border py-4">
+          <label className={labelStyles}>
             Evidence File Upload (PDF, PNG, JPG, WEBP - Max 10MB)
           </label>
           <div className="flex flex-col sm:flex-row items-center gap-4">
-            <label className="cursor-pointer px-4 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 border border-surface-700 text-slate-200 text-xs font-semibold flex items-center gap-2 transition-colors">
-              <Upload className="w-4 h-4 text-brand-400" />
+            <label className="cursor-pointer px-4 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface border border-border text-text-primary text-xs font-semibold flex items-center gap-2 transition-colors">
+              <Upload className="w-4 h-4 text-accent" />
               <span>{uploading ? 'Uploading...' : 'Choose File to Upload'}</span>
               <input
                 type="file"
@@ -430,8 +433,8 @@ export const AdminAchievementFormPage = () => {
 
         {/* Multi-select for Linked Skills */}
         <div className="space-y-2">
-          <label className="text-xs font-semibold text-slate-300 block">Link Associated Skills</label>
-          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-3 bg-surface-900 rounded-xl border border-surface-700">
+          <label className={labelStyles}>Link Associated Skills</label>
+          <div className="flex flex-wrap gap-2 max-h-40 overflow-y-auto p-3 bg-surface-elevated rounded-xl border border-border">
             {skills?.map((s) => {
               const selected = selectedSkillIds.includes(s.id);
               return (
@@ -441,8 +444,8 @@ export const AdminAchievementFormPage = () => {
                   onClick={() => toggleSelection(selectedSkillIds, setSelectedSkillIds, s.id)}
                   className={`px-3 py-1 rounded-lg text-xs font-medium border transition-colors ${
                     selected
-                      ? 'bg-brand-600 text-white border-brand-500'
-                      : 'bg-surface-800 text-slate-400 border-surface-700 hover:text-slate-200'
+                      ? 'bg-accent text-white border-accent'
+                      : 'bg-surface text-text-secondary border-border hover:text-text-primary'
                   }`}
                 >
                   {s.name}
@@ -455,36 +458,36 @@ export const AdminAchievementFormPage = () => {
         {/* Visibility, Featured, Custom Slug & Tags */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Visibility</label>
+            <label className={labelStyles}>Visibility</label>
             <select
               value={visibility}
               onChange={(e) => setVisibility(e.target.value)}
-              className="w-full bg-surface-900 border border-surface-700 text-slate-200 text-xs rounded-xl px-3 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             >
-              <option value="public">Public (Listed & Direct URL)</option>
-              <option value="unlisted">Unlisted (Direct URL Only)</option>
-              <option value="private">Private (Admin Only)</option>
+              <option value="public" className="bg-surface-elevated text-text-primary">Public (Listed & Direct URL)</option>
+              <option value="unlisted" className="bg-surface-elevated text-text-primary">Unlisted (Direct URL Only)</option>
+              <option value="private" className="bg-surface-elevated text-text-primary">Private (Admin Only)</option>
             </select>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-semibold text-slate-300">Tags (comma separated)</label>
+            <label className={labelStyles}>Tags (comma separated)</label>
             <input
               type="text"
               value={tagsInput}
               onChange={(e) => setTagsInput(e.target.value)}
               placeholder="aws, cloud, devops"
-              className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 text-xs rounded-xl px-4 py-2.5 focus:outline-none focus:border-brand-500"
+              className={inputStyles}
             />
           </div>
 
           <div className="flex items-center pt-6">
-            <label className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-slate-200 select-none">
+            <label className="flex items-center gap-3 cursor-pointer text-xs font-semibold text-text-primary select-none">
               <input
                 type="checkbox"
                 checked={featured}
                 onChange={(e) => setFeatured(e.target.checked)}
-                className="w-4 h-4 rounded bg-surface-900 border-surface-700 text-brand-500 focus:ring-brand-500"
+                className="w-4 h-4 rounded bg-surface-elevated border-border text-accent focus:ring-accent"
               />
               <span>★ Highlight as Featured</span>
             </label>
@@ -492,17 +495,17 @@ export const AdminAchievementFormPage = () => {
         </div>
 
         {/* Submit */}
-        <div className="pt-6 border-t border-surface-700/80 flex items-center justify-end gap-3">
+        <div className="pt-6 border-t border-border flex items-center justify-end gap-3">
           <Link
             to="/admin/achievements"
-            className="px-5 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 text-slate-300 font-semibold text-xs transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface text-text-secondary font-semibold text-xs transition-colors"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={saveMutation.isPending}
-            className="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs transition-colors flex items-center gap-2 shadow-lg shadow-brand-600/30 disabled:opacity-50"
+            className="px-6 py-2.5 rounded-xl bg-accent hover:brightness-110 text-white font-semibold text-xs transition-colors flex items-center gap-2 shadow-accent-glow disabled:opacity-50"
           >
             <Save className="w-4 h-4" />
             <span>{saveMutation.isPending ? 'Saving Record...' : isEditMode ? 'Update Achievement' : 'Create Achievement'}</span>

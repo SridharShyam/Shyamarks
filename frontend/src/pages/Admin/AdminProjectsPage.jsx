@@ -97,18 +97,21 @@ export const AdminProjectsPage = () => {
     }
   };
 
+  const inputStyles = "w-full bg-surface-elevated border border-border text-text-primary placeholder:text-text-muted rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-accent text-xs transition-colors";
+  const labelStyles = "font-semibold text-text-primary text-xs block mb-1";
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 pb-12">
       {/* Form Sidebar */}
       <div className="space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl p-6 shadow-xl space-y-4">
-          <h2 className="text-lg font-bold text-white flex items-center gap-2">
-            <FolderGit2 className="w-5 h-5 text-blue-400" />
+        <div className="glass-card rounded-2xl p-6 shadow-xl space-y-4">
+          <h2 className="text-lg font-bold text-text-primary flex items-center gap-2">
+            <FolderGit2 className="w-5 h-5 text-accent" />
             {editingProject ? 'Edit Project' : 'Create New Project'}
           </h2>
 
           {errorMsg && (
-            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-300 p-3 rounded-xl text-xs flex items-center gap-2">
+            <div className="bg-rose-500/10 border border-rose-500/30 text-rose-400 p-3 rounded-xl text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{errorMsg}</span>
             </div>
@@ -116,65 +119,65 @@ export const AdminProjectsPage = () => {
 
           <form onSubmit={handleSubmit} className="space-y-4 text-xs">
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Project Title *</label>
+              <label className={labelStyles}>Project Title *</label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Shyamarks Engine"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Description *</label>
+              <label className={labelStyles}>Description *</label>
               <textarea
                 required
                 rows={3}
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Summary of tech stack, architecture & features..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl p-3 focus:outline-none focus:border-brand-500"
+                className={`${inputStyles} p-3`}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">GitHub Repository URL</label>
+              <label className={labelStyles}>GitHub Repository URL</label>
               <input
                 type="url"
                 value={githubUrl}
                 onChange={(e) => setGithubUrl(e.target.value)}
                 placeholder="https://github.com/..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Live Demo URL</label>
+              <label className={labelStyles}>Live Demo URL</label>
               <input
                 type="url"
                 value={liveUrl}
                 onChange={(e) => setLiveUrl(e.target.value)}
                 placeholder="https://..."
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Tags (comma separated)</label>
+              <label className={labelStyles}>Tags (comma separated)</label>
               <input
                 type="text"
                 value={tagsInput}
                 onChange={(e) => setTagsInput(e.target.value)}
                 placeholder="react, fastapi, mongodb"
-                className="w-full bg-surface-900 border border-surface-700 text-slate-100 placeholder-slate-500 rounded-xl px-3.5 py-2.5 focus:outline-none focus:border-brand-500"
+                className={inputStyles}
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="font-semibold text-slate-300">Link Associated Skills</label>
-              <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2.5 bg-surface-900 rounded-xl border border-surface-700">
+              <label className={labelStyles}>Link Associated Skills</label>
+              <div className="flex flex-wrap gap-1.5 max-h-32 overflow-y-auto p-2.5 bg-surface-elevated rounded-xl border border-border">
                 {skills?.map((s) => {
                   const selected = selectedSkillIds.includes(s.id);
                   return (
@@ -184,8 +187,8 @@ export const AdminProjectsPage = () => {
                       onClick={() => toggleSkill(s.id)}
                       className={`px-2.5 py-0.5 rounded text-[11px] font-medium border transition-colors ${
                         selected
-                          ? 'bg-blue-600 text-white border-blue-500'
-                          : 'bg-surface-800 text-slate-400 border-surface-700 hover:text-slate-200'
+                          ? 'bg-accent text-white border-accent'
+                          : 'bg-surface text-text-secondary border-border hover:text-text-primary'
                       }`}
                     >
                       {s.name}
@@ -200,7 +203,7 @@ export const AdminProjectsPage = () => {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="w-1/2 py-2.5 rounded-xl bg-surface-900 hover:bg-surface-700 text-slate-300 font-semibold"
+                  className="w-1/2 py-2.5 rounded-xl bg-surface-elevated hover:bg-surface text-text-secondary font-semibold"
                 >
                   Cancel
                 </button>
@@ -208,7 +211,7 @@ export const AdminProjectsPage = () => {
               <button
                 type="submit"
                 disabled={saveMutation.isPending}
-                className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30"
+                className="flex-1 py-2.5 rounded-xl bg-accent hover:brightness-110 text-white font-semibold flex items-center justify-center gap-2 shadow-accent-glow"
               >
                 <Plus className="w-4 h-4" />
                 <span>{editingProject ? 'Update Project' : 'Create Project'}</span>
@@ -220,33 +223,33 @@ export const AdminProjectsPage = () => {
 
       {/* Projects List */}
       <div className="lg:col-span-2 space-y-6">
-        <div className="bg-surface-800/80 border border-surface-700/80 rounded-2xl overflow-hidden shadow-xl">
+        <div className="glass-card rounded-2xl overflow-hidden shadow-xl">
           <table className="w-full text-left text-xs">
-            <thead className="bg-surface-900/80 border-b border-surface-700 text-slate-400 uppercase font-mono">
+            <thead className="bg-surface-elevated border-b border-border text-text-muted uppercase font-mono">
               <tr>
                 <th className="px-6 py-4">Title & Description</th>
                 <th className="px-6 py-4">Links</th>
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-surface-700/60 text-slate-200">
+            <tbody className="divide-y divide-border text-text-primary">
               {isLoading ? (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={3} className="px-6 py-12 text-center text-text-muted">
                     Loading projects...
                   </td>
                 </tr>
               ) : projects && projects.length > 0 ? (
                 projects.map((proj) => (
-                  <tr key={proj.id} className="hover:bg-surface-700/40 transition-colors">
+                  <tr key={proj.id} className="hover:bg-surface-elevated/50 transition-colors">
                     <td className="px-6 py-4">
-                      <div className="font-bold text-white max-w-xs truncate">{proj.title}</div>
-                      <p className="text-[11px] text-slate-400 line-clamp-1 mt-0.5">{proj.description}</p>
+                      <div className="font-bold text-text-primary max-w-xs truncate">{proj.title}</div>
+                      <p className="text-[11px] text-text-muted line-clamp-1 mt-0.5">{proj.description}</p>
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex flex-col gap-1 text-[11px]">
                         {proj.github_url && (
-                          <a href={proj.github_url} target="_blank" rel="noreferrer" className="text-brand-400 hover:underline">
+                          <a href={proj.github_url} target="_blank" rel="noreferrer" className="text-accent hover:underline">
                             GitHub
                           </a>
                         )}
@@ -261,7 +264,7 @@ export const AdminProjectsPage = () => {
                       <div className="flex items-center justify-end gap-2">
                         <button
                           onClick={() => handleEditClick(proj)}
-                          className="p-1.5 rounded-lg bg-surface-900 border border-surface-700 text-slate-400 hover:text-white"
+                          className="p-1.5 rounded-lg bg-surface-elevated border border-border text-text-secondary hover:text-text-primary"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -271,7 +274,7 @@ export const AdminProjectsPage = () => {
                               deleteMutation.mutate(proj.id);
                             }
                           }}
-                          className="p-1.5 rounded-lg bg-surface-900 border border-surface-700 text-slate-400 hover:text-rose-400"
+                          className="p-1.5 rounded-lg bg-surface-elevated border border-border text-text-secondary hover:text-rose-400"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -281,7 +284,7 @@ export const AdminProjectsPage = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={3} className="px-6 py-12 text-center text-slate-500">
+                  <td colSpan={3} className="px-6 py-12 text-center text-text-muted">
                     No projects created yet.
                   </td>
                 </tr>
