@@ -28,9 +28,6 @@ export const Navbar = () => {
           <div className="flex flex-col">
             <span className="font-extrabold text-base tracking-tight text-white flex items-center gap-1">
               SHYAMARKS
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-brand-500/20 text-brand-300 border border-brand-500/30">
-                v2.0
-              </span>
             </span>
             <span className="text-[10px] font-mono text-slate-400 -mt-1">Proof-of-Skill Ledger</span>
           </div>
