@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --bg-main: #070a11;
-    --card-bg: rgba(15, 21, 35, 0.75);
-    --card-border: rgba(45, 61, 96, 0.5);
-    --text-primary: #f1f5f9;
+    --bg-main: #060913;
+    --card-bg: rgba(13, 19, 33, 0.75);
+    --card-border: rgba(38, 54, 88, 0.5);
+    --text-primary: #f8fafc;
     --text-secondary: #94a3b8;
   }
 
@@ -22,38 +22,80 @@
   body {
     background-color: var(--bg-main);
     color: var(--text-primary);
-    @apply antialiased min-h-screen font-sans selection:bg-brand-500 selection:text-white transition-colors duration-300;
+    @apply antialiased min-h-screen font-sans selection:bg-brand-500 selection:text-white transition-colors duration-300 overflow-x-hidden;
   }
 }
 
-/* Background Ambient Glow */
+/* Background Ambient Radial & Cyber Grid */
+.bg-cyber-grid {
+  background-size: 50px 50px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+}
+html.light .bg-cyber-grid {
+  background-image: 
+    linear-gradient(to right, rgba(15, 23, 42, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
+}
+
 .bg-glow-radial {
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.12) 0%, transparent 60%),
-    radial-gradient(circle at 90% 20%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
-    radial-gradient(circle at 10% 80%, rgba(6, 182, 212, 0.06) 0%, transparent 50%);
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.16) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+    radial-gradient(circle at 15% 75%, rgba(6, 182, 212, 0.10) 0%, transparent 45%);
 }
 
 html.light .bg-glow-radial {
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 60%),
-    radial-gradient(circle at 90% 20%, rgba(99, 102, 241, 0.04) 0%, transparent 50%);
+    radial-gradient(circle at 50% 0%, rgba(14, 165, 233, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(99, 102, 241, 0.05) 0%, transparent 45%);
 }
 
 /* Glassmorphism Card Style */
 .glass-card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
-  -webkit-backdrop-filter: blur(12px);
-  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
 }
 
 .glass-card-hover {
-  @apply glass-card transition-all duration-300 hover:border-brand-400/50 hover:-translate-y-0.5;
+  @apply glass-card transition-all duration-300 hover:border-brand-400/60 hover:-translate-y-1;
 }
 
 .glass-card-hover:hover {
-  box-shadow: 0 0 25px -5px rgba(14, 165, 233, 0.25);
+  box-shadow: 0 0 30px -5px rgba(14, 165, 233, 0.3), 0 0 15px -5px rgba(6, 182, 212, 0.2);
+}
+
+/* Gradient Shimmer & Pulse Animations */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, rgba(14, 165, 233, 0.2) 0%, rgba(56, 189, 248, 0.8) 50%, rgba(14, 165, 233, 0.2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; filter: blur(20px); }
+  50% { opacity: 0.9; filter: blur(30px); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 6s ease-in-out infinite;
 }
 
 /* Custom Scrollbars */
@@ -62,7 +104,7 @@ html.light .bg-glow-radial {
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #070a11;
+  background: #060913;
 }
 html.light ::-webkit-scrollbar-track {
   background: #f1f5f9;
@@ -75,5 +117,5 @@ html.light ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #0ea5e9;
 }

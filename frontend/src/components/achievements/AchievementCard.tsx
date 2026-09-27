@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Calendar, ExternalLink, FileText, Sparkles } from 'lucide-react';
+import { Award, Calendar, ExternalLink, FileText, Sparkles, CheckCircle } from 'lucide-react';
+import { motion } from 'framer-motion';
+import confetti from 'canvas-confetti';
 import { Achievement } from '../../types';
 import { CertificateLightbox } from '../ui/CertificateLightbox';
 
@@ -11,6 +13,17 @@ interface AchievementCardProps {
 
 export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, showAdminControls }) => {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+
+  const handleConfetti = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    confetti({
+      particleCount: 40,
+      spread: 60,
+      origin: { y: 0.7 },
+      colors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#10b981'],
+    });
+    setIsLightboxOpen(true);
+  };
 
   const getTypeBadgeColor = (type: string) => {
     switch (type) {
@@ -31,7 +44,14 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
 
   return (
     <>
-      <div className="glass-card-hover rounded-2xl p-6 flex flex-col justify-between shadow-lg relative group">
+      <motion.div
+        whileHover={{ y: -6, scale: 1.01 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        className="glass-card-hover rounded-2xl p-6 flex flex-col justify-between shadow-lg relative group overflow-hidden border border-obsidian-750 light:border-slate-200"
+      >
+        {/* Subtle Top Gradient Line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-cyanGlow-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+
         <div>
           {/* Header Badge Row */}
           <div className="flex items-start justify-between gap-3 mb-3">
@@ -41,7 +61,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
               </span>
               {achievement.featured && (
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-400/20 text-amber-300 border border-amber-400/40 uppercase tracking-wider flex items-center gap-1">
-                  <Sparkles className="w-3 h-3" />
+                  <Sparkles className="w-3 h-3 text-amber-300" />
                   Featured
                 </span>
               )}
@@ -59,11 +79,11 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
             {/* Quick Evidence Preview */}
             {(achievement.file_url || achievement.preview_image_url) && (
               <button
-                onClick={() => setIsLightboxOpen(true)}
-                className="p-1.5 rounded-lg bg-obsidian-850 hover:bg-brand-500/20 text-slate-400 hover:text-brand-300 border border-obsidian-750 transition-colors shrink-0"
-                title="Quick Evidence Preview"
+                onClick={handleConfetti}
+                className="p-1.5 rounded-lg bg-obsidian-850 hover:bg-brand-500/20 text-slate-400 hover:text-brand-300 border border-obsidian-750 transition-all shrink-0 hover:scale-110"
+                title="Quick Evidence Preview & Proof Verification"
               >
-                <FileText className="w-4 h-4" />
+                <FileText className="w-4 h-4 text-brand-400" />
               </button>
             )}
           </div>
@@ -99,7 +119,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
               {achievement.skills.slice(0, 4).map((skill) => (
                 <span
                   key={skill.id}
-                  className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300"
+                  className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300 hover:border-brand-400/40 transition-colors"
                 >
                   {skill.name}
                 </span>
@@ -117,7 +137,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
         <div className="pt-3 border-t border-obsidian-750/60 light:border-slate-200 flex items-center justify-between text-xs">
           <Link
             to={`/achievements/${achievement.slug}`}
-            className="text-brand-400 hover:text-brand-300 font-semibold inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform"
+            className="text-brand-400 hover:text-brand-300 font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
           >
             <span>View Proof Detail</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -129,7 +149,7 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
             </span>
           )}
         </div>
-      </div>
+      </motion.div>
 
       {/* Lightbox Modal */}
       <CertificateLightbox

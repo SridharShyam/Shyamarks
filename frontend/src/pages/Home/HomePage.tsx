@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import {
   Award,
   Layers,
@@ -11,12 +12,33 @@ import {
   TrendingUp,
   Terminal,
   Download,
-  Calendar
+  Calendar,
+  Zap,
+  Cpu,
+  CheckCircle2
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { AchievementCard } from '../../components/achievements/AchievementCard';
 import { SkillCard } from '../../components/skills/SkillCard';
+import { InteractiveTerminal } from '../../components/ui/InteractiveTerminal';
 import { exportEvidenceDossier } from '../../utils/exportEvidence';
+
+import { Variants } from 'framer-motion';
+
+const containerVariants: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
+
+const itemVariants: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
 
 export const HomePage: React.FC = () => {
   const { data: achievementsRes } = useQuery({
@@ -55,20 +77,25 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <div className="space-y-16 pb-16">
-      {/* Hero Section matching Shyam's portfolio aesthetic */}
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-20 pb-20"
+    >
+      {/* Hero Section matching Shyam's portfolio aesthetic + Framer Motion */}
       <section className="relative pt-6 pb-12">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
           {/* Left Column: Headline & Value Proposition */}
-          <div className="lg:col-span-7 space-y-6">
+          <motion.div variants={itemVariants} className="lg:col-span-7 space-y-6">
             {/* Status Pill Badge */}
-            <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono font-semibold shadow-glow-cyan">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono font-semibold shadow-glow-cyan">
+              <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Available for AI / ML Roles & Evidence Verification</span>
             </div>
 
             {/* Title */}
-            <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-100 light:text-slate-900 leading-[1.1]">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-100 light:text-slate-900 leading-[1.08]">
               Engineering intelligent systems that turn{' '}
               <span className="bg-gradient-to-r from-brand-300 via-cyanGlow-400 to-emerald-300 bg-clip-text text-transparent">
                 raw data into decisive action.
@@ -76,16 +103,17 @@ export const HomePage: React.FC = () => {
             </h1>
 
             {/* Subheading Taglines */}
-            <div className="space-y-2 border-l-2 border-brand-500/40 pl-4">
-              <p className="text-lg font-bold text-slate-200 light:text-slate-800">
-                Shyamarks — Mark Every Milestone.
+            <div className="space-y-2 border-l-2 border-brand-500/50 pl-4">
+              <p className="text-xl font-bold text-slate-100 light:text-slate-800 flex items-center gap-2">
+                <span>Shyamarks — Mark Every Milestone.</span>
+                <Zap className="w-5 h-5 text-amber-400 animate-bounce" />
               </p>
               <p className="text-sm text-slate-400 light:text-slate-600 font-medium">
                 Your achievements. Your evidence. Your journey.
               </p>
             </div>
 
-            <p className="text-xs sm:text-sm text-slate-300/80 light:text-slate-600 max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-300/90 light:text-slate-600 max-w-xl leading-relaxed">
               A structured personal achievement & credential evidence management platform designed by <strong>Shyam</strong>. Quantifies skill mastery through dynamic Claim Confidence Scores (CCS), archives verified certificates, and traces continuous professional growth.
             </p>
 
@@ -93,30 +121,30 @@ export const HomePage: React.FC = () => {
             <div className="pt-2 flex flex-wrap items-center gap-4">
               <Link
                 to="/achievements"
-                className="px-6 py-3 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-glow-cyan flex items-center gap-2 group transition-all"
+                className="px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-glow-cyan flex items-center gap-2.5 group transition-all hover:scale-105"
               >
                 <span>Explore Achievement Ledger</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <button
                 onClick={handleExportDossier}
-                className="px-5 py-3 rounded-xl bg-obsidian-850 light:bg-slate-200 hover:bg-obsidian-800 border border-obsidian-750 light:border-slate-300 text-slate-200 light:text-slate-800 font-semibold text-xs transition-all flex items-center gap-2"
+                className="px-5 py-3.5 rounded-2xl bg-obsidian-850 light:bg-slate-200 hover:bg-obsidian-800 border border-obsidian-750 light:border-slate-300 text-slate-200 light:text-slate-800 font-semibold text-xs transition-all flex items-center gap-2 hover:scale-105"
                 title="Download full Markdown evidence dossier"
               >
                 <Download className="w-4 h-4 text-brand-400" />
                 <span>Export Evidence Brief</span>
               </button>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Right Column: Shyam Interactive Profile Card */}
-          <div className="lg:col-span-5">
-            <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group">
+          {/* Right Column: Shyam Profile Card & Interactive CLI Terminal */}
+          <motion.div variants={itemVariants} className="lg:col-span-5 space-y-6">
+            <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group border border-obsidian-750 light:border-slate-200">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
               {/* Profile Header */}
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-cyanGlow-400 p-0.5 shadow-glow-cyan shrink-0">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-cyanGlow-400 p-0.5 shadow-glow-cyan shrink-0 animate-float">
                   <div className="w-full h-full bg-obsidian-900 rounded-[14px] flex items-center justify-center text-white font-black text-2xl">
                     S
                   </div>
@@ -141,44 +169,35 @@ export const HomePage: React.FC = () => {
                   {['Deep Learning', 'Predictive ML', 'Agentic AI', 'FastAPI', 'MongoDB Atlas', 'PyTorch'].map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300"
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300 hover:border-brand-400/40 transition-colors"
                     >
                       {tag}
                     </span>
                   ))}
                 </div>
               </div>
-
-              {/* Quick Status Bar */}
-              <div className="grid grid-cols-2 gap-3 pt-2 text-xs font-mono">
-                <div className="bg-obsidian-900/60 light:bg-slate-100 p-3 rounded-xl border border-obsidian-750/50 light:border-slate-200">
-                  <span className="text-slate-400 text-[10px] block">VERIFICATION</span>
-                  <span className="text-emerald-400 font-bold">100% Cryptographic</span>
-                </div>
-                <div className="bg-obsidian-900/60 light:bg-slate-100 p-3 rounded-xl border border-obsidian-750/50 light:border-slate-200">
-                  <span className="text-slate-400 text-[10px] block">ENGINE</span>
-                  <span className="text-brand-300 font-bold">Real-time CCS v1</span>
-                </div>
-              </div>
             </div>
-          </div>
+
+            {/* Live Interactive CLI Terminal */}
+            <InteractiveTerminal />
+          </motion.div>
         </div>
       </section>
 
       {/* Stats Counter Bar with Glowing Obsidian Cards */}
-      <section className="max-w-7xl mx-auto">
+      <motion.section variants={itemVariants} className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="glass-card-hover rounded-2xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
+            <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0 shadow-glow-cyan">
               <Award className="w-6 h-6" />
             </div>
             <div>
               <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalAchievements}</div>
               <div className="text-xs text-slate-400 font-medium">Total Milestones</div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="glass-card-hover rounded-2xl p-6 flex items-center gap-4">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
@@ -186,9 +205,9 @@ export const HomePage: React.FC = () => {
               <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalCertifications}</div>
               <div className="text-xs text-slate-400 font-medium">Certifications</div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="glass-card-hover rounded-2xl p-6 flex items-center gap-4">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
             <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
               <Layers className="w-6 h-6" />
             </div>
@@ -196,22 +215,22 @@ export const HomePage: React.FC = () => {
               <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalSkills}</div>
               <div className="text-xs text-slate-400 font-medium">Verified Skills</div>
             </div>
-          </div>
+          </motion.div>
 
-          <div className="glass-card-hover rounded-2xl p-6 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-cyanGlow-500/10 border border-cyanGlow-500/30 flex items-center justify-center text-cyanGlow-400 shrink-0">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
+            <div className="w-12 h-12 rounded-xl bg-cyanGlow-500/10 border border-cyanGlow-500/30 flex items-center justify-center text-cyanGlow-400 shrink-0 shadow-glow-cyan">
               <FolderGit2 className="w-6 h-6" />
             </div>
             <div>
               <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalProjects}</div>
               <div className="text-xs text-slate-400 font-medium">Projects</div>
             </div>
-          </div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Featured Achievements */}
-      <section className="max-w-7xl mx-auto space-y-6">
+      <motion.section variants={itemVariants} className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
@@ -240,10 +259,10 @@ export const HomePage: React.FC = () => {
             No featured achievements listed yet. Add items via the Studio Console.
           </div>
         )}
-      </section>
+      </motion.section>
 
       {/* Top Skills by Claim Confidence Score (CCS) */}
-      <section className="max-w-7xl mx-auto space-y-6">
+      <motion.section variants={itemVariants} className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
@@ -272,10 +291,10 @@ export const HomePage: React.FC = () => {
             No skill metrics recorded yet.
           </div>
         )}
-      </section>
+      </motion.section>
 
       {/* Timeline Stream Preview */}
-      <section className="max-w-5xl mx-auto space-y-6">
+      <motion.section variants={itemVariants} className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
@@ -323,7 +342,7 @@ export const HomePage: React.FC = () => {
             No recent milestones.
           </div>
         )}
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 };
