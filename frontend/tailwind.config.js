@@ -8,43 +8,43 @@ export default {
   theme: {
     extend: {
       colors: {
-        obsidian: {
-          950: '#070a11',
-          900: '#0b0f19',
-          850: '#0f1523',
-          800: '#141c2e',
-          750: '#1a243a',
-          700: '#202d48',
-          600: '#2d3d60',
+        background: 'var(--bg-background)',
+        surface: {
+          DEFAULT: 'var(--surface)',
+          elevated: 'var(--surface-elevated)',
         },
-        brand: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
-          950: '#082f49',
+        border: 'var(--border)',
+        accent: {
+          DEFAULT: 'var(--accent)',
+          glow: 'var(--accent-glow)',
         },
-        cyanGlow: {
-          400: '#22d3ee',
-          500: '#06b6d4',
-        }
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          muted: 'var(--text-muted)',
+        },
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        error: 'var(--error)',
       },
       boxShadow: {
-        'glow-cyan': '0 0 25px -5px rgba(14, 165, 233, 0.25)',
-        'glow-cyan-lg': '0 0 35px -5px rgba(56, 189, 248, 0.35)',
-        'glow-amber': '0 0 25px -5px rgba(245, 158, 11, 0.25)',
+        'accent-glow': '0 0 20px rgba(108, 99, 255, 0.15)',
+        'accent-glow-lg': '0 0 35px rgba(108, 99, 255, 0.3)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
-        mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
+        heading: ['Space Grotesk', 'sans-serif'],
+        mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+      },
+      fontSize: {
+        'hero': ['clamp(2.5rem, 5vw, 4rem)', { lineHeight: '1.1', letterSpacing: '-0.02em', fontWeight: '700' }],
+        'h1': ['clamp(2rem, 3.5vw, 3rem)', { lineHeight: '1.2', fontWeight: '700' }],
+        'h2': ['clamp(1.5rem, 2.5vw, 2rem)', { lineHeight: '1.3', fontWeight: '600' }],
+        'h3': ['1.25rem', { lineHeight: '1.4', fontWeight: '600' }],
+        'label': ['0.75rem', { lineHeight: '1.4', letterSpacing: '0.1em', fontWeight: '600' }],
       }
     },
   },
   plugins: [],
 }
+

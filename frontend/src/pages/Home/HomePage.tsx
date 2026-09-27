@@ -8,37 +8,19 @@ import {
   FolderGit2,
   ArrowRight,
   ShieldCheck,
-  Sparkles,
   TrendingUp,
-  Terminal,
   Download,
   Calendar,
-  Zap,
-  Cpu,
-  CheckCircle2
+  Zap
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { AchievementCard } from '../../components/achievements/AchievementCard';
 import { SkillCard } from '../../components/skills/SkillCard';
 import { InteractiveTerminal } from '../../components/ui/InteractiveTerminal';
 import { exportEvidenceDossier } from '../../utils/exportEvidence';
-
-import { Variants } from 'framer-motion';
-
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
+import { useCountUp } from '../../hooks/useCountUp';
+import { RevealOnScroll } from '../../components/ui/RevealOnScroll';
+import { staggerContainer, fadeUp, scaleIn } from '../../lib/animations';
 
 export const HomePage: React.FC = () => {
   const { data: achievementsRes } = useQuery({
@@ -57,10 +39,15 @@ export const HomePage: React.FC = () => {
   });
 
   const achievements = achievementsRes?.items || [];
-  const totalAchievements = achievementsRes?.total || 0;
-  const totalCertifications = achievements.filter((a) => a.type === 'Certification').length;
-  const totalSkills = skills?.length || 0;
-  const totalProjects = projects?.length || 0;
+  const totalAchievementsRaw = achievementsRes?.total || 0;
+  const totalCertificationsRaw = achievements.filter((a) => a.type === 'Certification').length;
+  const totalSkillsRaw = skills?.length || 0;
+  const totalProjectsRaw = projects?.length || 0;
+
+  const totalAchievements = useCountUp(totalAchievementsRaw, 1500, true);
+  const totalCertifications = useCountUp(totalCertificationsRaw, 1500, true);
+  const totalSkills = useCountUp(totalSkillsRaw, 1500, true);
+  const totalProjects = useCountUp(totalProjectsRaw, 1500, true);
 
   const featuredAchievements = achievements.filter((a) => a.featured).slice(0, 3);
   const displayFeatured = featuredAchievements.length > 0 ? featuredAchievements : achievements.slice(0, 3);
@@ -77,99 +64,99 @@ export const HomePage: React.FC = () => {
   };
 
   return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="space-y-20 pb-20"
-    >
-      {/* Hero Section matching Shyam's portfolio aesthetic + Framer Motion */}
+    <div className="space-y-20 pb-20">
+      {/* Hero Section */}
       <section className="relative pt-6 pb-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-          {/* Left Column: Headline & Value Proposition */}
-          <motion.div variants={itemVariants} className="lg:col-span-7 space-y-6">
-            {/* Status Pill Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-mono font-semibold shadow-glow-cyan">
+          {/* Left Column */}
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            animate="visible"
+            className="lg:col-span-7 space-y-6"
+          >
+            {/* Status Pill */}
+            <motion.div variants={fadeUp} className="inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-mono font-semibold shadow-accent-glow">
               <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
               <span>Available for AI / ML Roles & Evidence Verification</span>
-            </div>
+            </motion.div>
 
-            {/* Title */}
-            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-slate-100 light:text-slate-900 leading-[1.08]">
+            {/* Staggered Hero Title */}
+            <motion.h1 variants={fadeUp} className="font-heading text-hero text-text-primary leading-tight">
               Engineering intelligent systems that turn{' '}
-              <span className="bg-gradient-to-r from-brand-300 via-cyanGlow-400 to-emerald-300 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-accent via-indigo-400 to-emerald-400 bg-clip-text text-transparent">
                 raw data into decisive action.
               </span>
-            </h1>
+            </motion.h1>
 
             {/* Subheading Taglines */}
-            <div className="space-y-2 border-l-2 border-brand-500/50 pl-4">
-              <p className="text-xl font-bold text-slate-100 light:text-slate-800 flex items-center gap-2">
+            <motion.div variants={fadeUp} className="space-y-2 border-l-2 border-accent/50 pl-4">
+              <p className="font-heading text-h3 font-bold text-text-primary flex items-center gap-2">
                 <span>Shyamarks — Mark Every Milestone.</span>
                 <Zap className="w-5 h-5 text-amber-400 animate-bounce" />
               </p>
-              <p className="text-sm text-slate-400 light:text-slate-600 font-medium">
+              <p className="text-xs text-text-secondary font-medium">
                 Your achievements. Your evidence. Your journey.
               </p>
-            </div>
+            </motion.div>
 
-            <p className="text-xs sm:text-sm text-slate-300/90 light:text-slate-600 max-w-xl leading-relaxed">
+            <motion.p variants={fadeUp} className="text-xs sm:text-sm text-text-secondary max-w-xl leading-relaxed font-sans">
               A structured personal achievement & credential evidence management platform designed by <strong>Shyam</strong>. Quantifies skill mastery through dynamic Claim Confidence Scores (CCS), archives verified certificates, and traces continuous professional growth.
-            </p>
+            </motion.p>
 
             {/* Hero CTA Buttons */}
-            <div className="pt-2 flex flex-wrap items-center gap-4">
+            <motion.div variants={fadeUp} className="pt-2 flex flex-wrap items-center gap-4">
               <Link
                 to="/achievements"
-                className="px-6 py-3.5 rounded-2xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs shadow-glow-cyan flex items-center gap-2.5 group transition-all hover:scale-105"
+                className="px-6 py-3.5 rounded-2xl bg-accent text-white font-semibold text-xs shadow-accent-glow flex items-center gap-2.5 group transition-all hover:scale-105"
               >
                 <span>Explore Achievement Ledger</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <button
                 onClick={handleExportDossier}
-                className="px-5 py-3.5 rounded-2xl bg-obsidian-850 light:bg-slate-200 hover:bg-obsidian-800 border border-obsidian-750 light:border-slate-300 text-slate-200 light:text-slate-800 font-semibold text-xs transition-all flex items-center gap-2 hover:scale-105"
+                className="px-5 py-3.5 rounded-2xl bg-surface-elevated hover:bg-surface border border-border text-text-primary font-semibold text-xs transition-all flex items-center gap-2 hover:scale-105"
                 title="Download full Markdown evidence dossier"
               >
-                <Download className="w-4 h-4 text-brand-400" />
+                <Download className="w-4 h-4 text-accent" />
                 <span>Export Evidence Brief</span>
               </button>
-            </div>
+            </motion.div>
           </motion.div>
 
           {/* Right Column: Shyam Profile Card & Interactive CLI Terminal */}
-          <motion.div variants={itemVariants} className="lg:col-span-5 space-y-6">
-            <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group border border-obsidian-750 light:border-slate-200">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <motion.div variants={fadeUp} className="lg:col-span-5 space-y-6">
+            <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group border border-border">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-accent/10 rounded-full blur-2xl pointer-events-none"></div>
 
               {/* Profile Header */}
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-cyanGlow-400 p-0.5 shadow-glow-cyan shrink-0 animate-float">
-                  <div className="w-full h-full bg-obsidian-900 rounded-[14px] flex items-center justify-center text-white font-black text-2xl">
+                <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-accent to-indigo-500 p-0.5 shadow-accent-glow shrink-0 animate-float">
+                  <div className="w-full h-full bg-surface rounded-[14px] flex items-center justify-center text-text-primary font-heading font-black text-2xl">
                     S
                   </div>
                 </div>
                 <div>
-                  <h3 className="text-xl font-extrabold text-slate-100 light:text-slate-900">
+                  <h3 className="font-heading text-h3 font-bold text-text-primary">
                     Shyam
                   </h3>
-                  <p className="text-xs font-semibold text-brand-400 font-mono mt-0.5">
+                  <p className="text-xs font-semibold text-accent font-mono mt-0.5">
                     AI Engineer & Data Scientist
                   </p>
-                  <p className="text-[11px] text-slate-400 mt-1">
+                  <p className="text-[11px] text-text-muted mt-1">
                     Decision Support Systems • MLOps • Agentic AI
                   </p>
                 </div>
               </div>
 
               {/* Core Competencies Tags */}
-              <div className="space-y-2 pt-2 border-t border-obsidian-750/60 light:border-slate-200">
-                <span className="text-[10px] font-mono font-semibold uppercase text-slate-400">Core Technical DNA</span>
+              <div className="space-y-2 pt-2 border-t border-border">
+                <span className="text-label text-text-muted">Core Technical DNA</span>
                 <div className="flex flex-wrap gap-1.5">
                   {['Deep Learning', 'Predictive ML', 'Agentic AI', 'FastAPI', 'MongoDB Atlas', 'PyTorch'].map((tag) => (
                     <span
                       key={tag}
-                      className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300 hover:border-brand-400/40 transition-colors"
+                      className="px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-surface-elevated text-text-secondary border border-border hover:border-accent/40 transition-colors"
                     >
                       {tag}
                     </span>
@@ -184,64 +171,64 @@ export const HomePage: React.FC = () => {
         </div>
       </section>
 
-      {/* Stats Counter Bar with Glowing Obsidian Cards */}
-      <motion.section variants={itemVariants} className="max-w-7xl mx-auto">
+      {/* Stats Counter Bar with Count-Up animation */}
+      <RevealOnScroll className="max-w-7xl mx-auto">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
-            <div className="w-12 h-12 rounded-xl bg-brand-500/10 border border-brand-500/30 flex items-center justify-center text-brand-400 shrink-0 shadow-glow-cyan">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-border">
+            <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/30 flex items-center justify-center text-accent shrink-0 shadow-accent-glow">
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalAchievements}</div>
-              <div className="text-xs text-slate-400 font-medium">Total Milestones</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalAchievements}</div>
+              <div className="text-xs text-text-secondary font-medium">Total Milestones</div>
             </div>
           </motion.div>
 
-          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-border">
             <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalCertifications}</div>
-              <div className="text-xs text-slate-400 font-medium">Certifications</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalCertifications}</div>
+              <div className="text-xs text-text-secondary font-medium">Certifications</div>
             </div>
           </motion.div>
 
-          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-border">
             <div className="w-12 h-12 rounded-xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-purple-400 shrink-0">
               <Layers className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalSkills}</div>
-              <div className="text-xs text-slate-400 font-medium">Verified Skills</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalSkills}</div>
+              <div className="text-xs text-text-secondary font-medium">Verified Skills</div>
             </div>
           </motion.div>
 
-          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-obsidian-750">
-            <div className="w-12 h-12 rounded-xl bg-cyanGlow-500/10 border border-cyanGlow-500/30 flex items-center justify-center text-cyanGlow-400 shrink-0 shadow-glow-cyan">
+          <motion.div whileHover={{ y: -4 }} className="glass-card-hover rounded-2xl p-6 flex items-center gap-4 border border-border">
+            <div className="w-12 h-12 rounded-xl bg-indigo-500/10 border border-indigo-500/30 flex items-center justify-center text-accent shrink-0 shadow-accent-glow">
               <FolderGit2 className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-slate-100 light:text-slate-900">{totalProjects}</div>
-              <div className="text-xs text-slate-400 font-medium">Projects</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalProjects}</div>
+              <div className="text-xs text-text-secondary font-medium">Projects</div>
             </div>
           </motion.div>
         </div>
-      </motion.section>
+      </RevealOnScroll>
 
       {/* Featured Achievements */}
-      <motion.section variants={itemVariants} className="max-w-7xl mx-auto space-y-6">
+      <RevealOnScroll className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
-              <Award className="w-6 h-6 text-brand-400" />
+            <h2 className="font-heading text-h2 font-bold text-text-primary flex items-center gap-2">
+              <Award className="w-6 h-6 text-accent" />
               Featured Credentials & Proof
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Highlighted milestones backed by verified credentials</p>
+            <p className="text-xs text-text-secondary mt-1">Highlighted milestones backed by verified credentials</p>
           </div>
           <Link
             to="/achievements"
-            className="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1 font-mono"
+            className="text-xs font-semibold text-accent hover:underline flex items-center gap-1 font-mono"
           >
             <span>View All Explorer</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -249,31 +236,39 @@ export const HomePage: React.FC = () => {
         </div>
 
         {displayFeatured.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {displayFeatured.map((ach) => (
-              <AchievementCard key={ach.id} achievement={ach} />
+              <motion.div key={ach.id} variants={fadeUp}>
+                <AchievementCard achievement={ach} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="glass-card rounded-2xl p-12 text-center text-slate-400 text-xs">
-            No featured achievements listed yet. Add items via the Studio Console.
+          <div className="glass-card rounded-2xl p-12 text-center text-text-muted text-xs">
+            No featured achievements listed yet.
           </div>
         )}
-      </motion.section>
+      </RevealOnScroll>
 
       {/* Top Skills by Claim Confidence Score (CCS) */}
-      <motion.section variants={itemVariants} className="max-w-7xl mx-auto space-y-6">
+      <RevealOnScroll className="max-w-7xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
+            <h2 className="font-heading text-h2 font-bold text-text-primary flex items-center gap-2">
               <TrendingUp className="w-6 h-6 text-emerald-400" />
               Top Skills by Claim Confidence Score (CCS)
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Dynamic read-time score computed from evidence breadth & recency</p>
+            <p className="text-xs text-text-secondary mt-1">Dynamic read-time score computed from evidence breadth & recency</p>
           </div>
           <Link
             to="/skills"
-            className="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1 font-mono"
+            className="text-xs font-semibold text-accent hover:underline flex items-center gap-1 font-mono"
           >
             <span>View All Skills Index</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -281,31 +276,39 @@ export const HomePage: React.FC = () => {
         </div>
 
         {topSkills.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {topSkills.map((skill) => (
-              <SkillCard key={skill.id} skill={skill} />
+              <motion.div key={skill.id} variants={scaleIn}>
+                <SkillCard skill={skill} />
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         ) : (
-          <div className="glass-card rounded-2xl p-12 text-center text-slate-400 text-xs">
+          <div className="glass-card rounded-2xl p-12 text-center text-text-muted text-xs">
             No skill metrics recorded yet.
           </div>
         )}
-      </motion.section>
+      </RevealOnScroll>
 
       {/* Timeline Stream Preview */}
-      <motion.section variants={itemVariants} className="max-w-5xl mx-auto space-y-6">
+      <RevealOnScroll className="max-w-5xl mx-auto space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-extrabold text-slate-100 light:text-slate-900 flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-brand-400" />
+            <h2 className="font-heading text-h2 font-bold text-text-primary flex items-center gap-2">
+              <Calendar className="w-6 h-6 text-accent" />
               Recent Milestone Stream
             </h2>
-            <p className="text-xs text-slate-400 mt-1">Chronological record of recent achievement milestones</p>
+            <p className="text-xs text-text-secondary mt-1">Chronological record of recent achievement milestones</p>
           </div>
           <Link
             to="/timeline"
-            className="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1 font-mono"
+            className="text-xs font-semibold text-accent hover:underline flex items-center gap-1 font-mono"
           >
             <span>Full Timeline & Heatmap</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -313,36 +316,36 @@ export const HomePage: React.FC = () => {
         </div>
 
         {latestMilestones.length > 0 ? (
-          <div className="relative border-l-2 border-obsidian-750/80 light:border-slate-300 ml-4 space-y-6">
+          <div className="relative border-l-2 border-border ml-4 space-y-6">
             {latestMilestones.map((ach) => (
               <div key={ach.id} className="relative pl-6">
-                <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-brand-500 border-4 border-obsidian-950 shadow-glow-cyan"></div>
+                <div className="absolute -left-[9px] top-2 w-4 h-4 rounded-full bg-accent border-4 border-background shadow-accent-glow"></div>
                 <div className="glass-card-hover rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div>
-                    <span className="text-[10px] font-mono font-semibold text-brand-300 bg-brand-500/10 border border-brand-500/20 px-2 py-0.5 rounded mr-2">
+                    <span className="text-[10px] font-mono font-semibold text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded mr-2">
                       {ach.type}
                     </span>
                     <Link
                       to={`/achievements/${ach.slug}`}
-                      className="font-bold text-slate-100 light:text-slate-900 hover:text-brand-300 transition-colors"
+                      className="font-heading font-bold text-text-primary hover:text-accent transition-colors"
                     >
                       {ach.title}
                     </Link>
                     {ach.issuer && (
-                      <span className="text-xs text-slate-400 ml-2">via {ach.issuer.name}</span>
+                      <span className="text-xs text-text-secondary ml-2">via {ach.issuer.name}</span>
                     )}
                   </div>
-                  <span className="text-xs font-mono text-slate-400 shrink-0">{ach.issued_date}</span>
+                  <span className="text-xs font-mono text-text-muted shrink-0">{ach.issued_date}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="glass-card rounded-2xl p-8 text-center text-slate-400 text-xs">
+          <div className="glass-card rounded-2xl p-8 text-center text-text-muted text-xs">
             No recent milestones.
           </div>
         )}
-      </motion.section>
-    </motion.div>
+      </RevealOnScroll>
+    </div>
   );
 };

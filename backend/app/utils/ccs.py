@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone, timedelta
 from typing import List, Dict, Any
 
 EVIDENCE_WEIGHTS = {
@@ -8,142 +8,116 @@ EVIDENCE_WEIGHTS = {
     "Workshop": 10,
     "Course": 10,
     "Project": 20,
-    "Award": 15
+    "Award": 15,
+    "Hackathon": 12,
+    "Competition": 12,
+    "Training": 10,
+    "Publication": 20,
+    "Other": 5,
 }
 
-def calculate_ccs_for_skill(
-    skill_id: str,
-    achievements: List[Dict[str, Any]],
-    projects: List[Dict[str, Any]],
-    experiences: List[Dict[str, Any]]
-) -> Dict[str, Any]:
+def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
     """
-    Computes Claim Confidence Score (CCS 0-100) and derived flags for a given skill.
+    achievements: list of achievement dicts linked to a skill
+    Returns: {
+        score: int (0-100),
+        evidence_types: list of unique types,
+        breadth_gap: bool,
+        unanchored: bool,
+        breakdown: dict of type->count
+    }
     """
-    now = datetime.now(timezone.utc)
-    six_months_ago = now - timedelta(days=182)
-    twelve_months_ago = now - timedelta(days=365)
+    if not achievements:
+        return {
+            "score": 0,
+            "evidence_types": [],
+            "breadth_gap": False,
+            "unanchored": True,
+            "breakdown": {}
+        }
 
-    from datetime import timedelta
-
-    # Filter achievements referencing skill_id
-    related_achievements = [a for a in achievements if skill_id in a.get("skill_ids", [])]
-    
-    # Filter projects referencing skill_id
-    related_projects = [p for p in projects if skill_id in p.get("skill_ids", [])]
-
-    # Filter experiences referencing skill_id
-    related_experiences = [e for e in experiences if skill_id in e.get("skill_ids", [])]
-
-    evidence_types_present = set()
-    latest_evidence_date = None
-
-    def update_latest_date(date_val):
-        nonlocal latest_evidence_date
-        if not date_val:
-            return
-        if isinstance(date_val, str):
-            try:
-                date_val = datetime.fromisoformat(date_val.replace('Z', '+00:00'))
-            except Exception:
-                return
-        if date_val.tzinfo is None:
-            date_val = date_val.replace(tzinfo=timezone.utc)
-        if latest_evidence_date is None or date_val > latest_evidence_date:
-            latest_evidence_date = date_val
-
-    cert_count = 0
-    award_count = 0
-    internship_count = 0
-    virtual_exp_count = 0
-    workshop_count = 0
-    course_count = 0
-    other_ach_count = 0
-
-    for ach in related_achievements:
-        ach_type = ach.get("type")
-        if ach_type:
-            evidence_types_present.add(ach_type)
-        if ach_type == "Certification":
-            cert_count += 1
-        elif ach_type == "Award":
-            award_count += 1
-        elif ach_type == "Internship":
-            internship_count += 1
-        elif ach_type == "Virtual Experience":
-            virtual_exp_count += 1
-        elif ach_type == "Workshop":
-            workshop_count += 1
-        elif ach_type == "Course":
-            course_count += 1
-        else:
-            other_ach_count += 1
-        
-        update_latest_date(ach.get("issued_date"))
-
-    project_count = len(related_projects)
-    if project_count > 0:
-        evidence_types_present.add("Project")
-        for proj in related_projects:
-            update_latest_date(proj.get("created_at"))
-
-    exp_count = len(related_experiences)
-    for exp in related_experiences:
-        exp_type = exp.get("type")
-        if exp_type == "Internship":
-            evidence_types_present.add("Internship")
-            internship_count += 1
-        else:
-            evidence_types_present.add("Experience")
-        update_latest_date(exp.get("start_date"))
-
-    # Base score: max once per evidence type
+    seen_types = set()
+    breakdown = {}
     base_score = 0
-    for etype in evidence_types_present:
-        base_score += EVIDENCE_WEIGHTS.get(etype, 0)
+    today = date.today()
+    most_recent_date = None
+
+    for ach in achievements:
+        ach_type = ach.get("type", "Other")
+        ach_date = ach.get("issued_date")
+
+        # Track breakdown
+        breakdown[ach_type] = breakdown.get(ach_type, 0) + 1
+
+        # Add weight only once per type (breadth model, not volume model)
+        if ach_type not in seen_types:
+            base_score += EVIDENCE_WEIGHTS.get(ach_type, 5)
+            seen_types.add(ach_type)
+
+        # Track most recent evidence date
+        if ach_date:
+            if isinstance(ach_date, str):
+                try:
+                    ach_date = datetime.strptime(ach_date.split('T')[0], "%Y-%m-%d").date()
+                except Exception:
+                    ach_date = None
+            elif isinstance(ach_date, datetime):
+                ach_date = ach_date.date()
+            if ach_date:
+                if most_recent_date is None or ach_date > most_recent_date:
+                    most_recent_date = ach_date
 
     # Breadth bonus
-    distinct_types_count = len(evidence_types_present)
     breadth_bonus = 0
-    if distinct_types_count >= 5:
+    if len(seen_types) >= 5:
         breadth_bonus = 20
-    elif distinct_types_count >= 3:
+    elif len(seen_types) >= 3:
         breadth_bonus = 10
 
     # Recency bonus
     recency_bonus = 0
-    if latest_evidence_date:
-        if latest_evidence_date >= six_months_ago:
+    if most_recent_date:
+        days_since = (today - most_recent_date).days
+        if days_since <= 180:
             recency_bonus = 15
-        elif latest_evidence_date >= twelve_months_ago:
+        elif days_since <= 365:
             recency_bonus = 10
 
-    total_ccs = min(100, base_score + breadth_bonus + recency_bonus)
+    raw_score = base_score + breadth_bonus + recency_bonus
+    final_score = min(raw_score, 100)
 
     # Derived flags
-    # evidence_breadth_gap: true if 3+ certifications exist but 0 projects for this skill
-    evidence_breadth_gap = (cert_count >= 3 and project_count == 0)
+    has_cert = any(t in seen_types for t in ["Certification", "Course", "Workshop", "Training"])
+    has_project = "Project" in seen_types
+    has_experience = any(t in seen_types for t in ["Internship", "Virtual Experience"])
 
-    # unanchored: true if the skill appears in a project's skill_ids but has 0 certifications and 0 experiences
-    # (experiences including both achievement type Internship/Experience or Experience entity)
-    total_certs_and_exps = cert_count + exp_count + internship_count + virtual_exp_count
-    unanchored = (project_count > 0 and total_certs_and_exps == 0)
-
-    breakdown = {
-        "certifications": cert_count,
-        "projects": project_count,
-        "experiences": exp_count,
-        "internships": internship_count,
-        "virtual_experiences": virtual_exp_count,
-        "workshops": workshop_count,
-        "courses": course_count,
-        "awards": award_count,
-        "total": len(related_achievements) + project_count + exp_count
-    }
+    breadth_gap = has_cert and not has_project
+    unanchored = not has_cert and not has_experience
 
     return {
-        "ccs": total_ccs,
-        "evidence_breadth_gap": evidence_breadth_gap,
+        "score": final_score,
+        "evidence_types": list(seen_types),
+        "breadth_gap": breadth_gap,
         "unanchored": unanchored,
-        "evidence_breakdown": breakdown
+        "breakdown": breakdown
+    }
+
+def calculate_ccs_for_skill(
+    skill_id: str,
+    achievements: List[Dict[str, Any]],
+    projects: List[Dict[str, Any]] = None,
+    experiences: List[Dict[str, Any]] = None
+) -> Dict[str, Any]:
+    related_ach = [a for a in achievements if skill_id in a.get("skill_ids", []) or str(skill_id) in [str(s) for s in a.get("skill_ids", [])]]
+    if projects:
+        for p in projects:
+            if skill_id in p.get("skill_ids", []) or str(skill_id) in [str(s) for s in p.get("skill_ids", [])]:
+                related_ach.append({"type": "Project", "issued_date": p.get("created_at") or p.get("start_date")})
+
+    ccs_result = compute_ccs(related_ach)
+    return {
+        "ccs": ccs_result["score"],
+        "evidence_breadth_gap": ccs_result["breadth_gap"],
+        "unanchored": ccs_result["unanchored"],
+        "evidence_breakdown": ccs_result["breakdown"]
     }

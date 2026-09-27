@@ -1,13 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Award, Layers, FolderGit2, Calendar, ShieldCheck, LogOut, Sun, Moon, Terminal, Sliders } from 'lucide-react';
+import { Menu, X, Sliders, LogOut } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useTheme } from '../../context/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export const Navbar: React.FC = () => {
   const location = useLocation();
   const { isAuthenticated, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/') return location.pathname === '/';
@@ -15,96 +15,61 @@ export const Navbar: React.FC = () => {
   };
 
   const navLinks = [
-    { path: '/', label: 'Overview', icon: Terminal },
-    { path: '/achievements', label: 'Achievements', icon: Award },
-    { path: '/skills', label: 'Skills Index', icon: Layers },
-    { path: '/projects', label: 'Projects', icon: FolderGit2 },
-    { path: '/timeline', label: 'Timeline', icon: Calendar },
+    { path: '/', label: 'Home' },
+    { path: '/achievements', label: 'Achievements' },
+    { path: '/skills', label: 'Skills' },
+    { path: '/projects', label: 'Projects' },
+    { path: '/timeline', label: 'Timeline' },
   ];
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-obsidian-950/80 light:bg-white/80 backdrop-blur-xl border-b border-obsidian-750/60 light:border-slate-200">
+    <header className="fixed top-0 left-0 right-0 z-40 w-full backdrop-blur-md bg-background/80 border-b border-border transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand Logo */}
-        <Link to="/" className="flex items-center gap-3 group">
-          <div className="relative">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-brand-500 to-cyanGlow-400 flex items-center justify-center text-white font-black text-lg shadow-glow-cyan group-hover:scale-105 transition-transform duration-300">
-              S
-            </div>
-            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-emerald-400 border-2 border-obsidian-950 rounded-full animate-pulse"></span>
-          </div>
-          <div className="flex flex-col">
-            <div className="flex items-center gap-1.5">
-              <span className="font-extrabold text-lg tracking-tight text-slate-100 light:text-slate-900 group-hover:text-brand-400 transition-colors">
-                Shyamarks
-              </span>
-              <span className="px-1.5 py-0.2 rounded text-[9px] font-mono font-bold uppercase bg-brand-500/10 text-brand-300 border border-brand-500/30">
-                AI / Evidence
-              </span>
-            </div>
-            <span className="text-[10px] text-slate-400 font-mono tracking-wider">
-              Mark Every Milestone
-            </span>
-          </div>
+        {/* Left Wordmark */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <span className="font-heading font-semibold text-xl tracking-tight text-text-primary">
+            S<span className="text-accent">.</span>hyamarks
+          </span>
         </Link>
 
-        {/* Public Navigation Pills */}
-        <nav className="hidden md:flex items-center gap-1.5 bg-obsidian-900/60 light:bg-slate-100/80 p-1.5 rounded-full border border-obsidian-750/60 light:border-slate-200">
+        {/* Desktop Nav Links */}
+        <nav className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => {
-            const Icon = link.icon;
             const active = isActive(link.path);
             return (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
-                  active
-                    ? 'bg-brand-500 text-white shadow-glow-cyan'
-                    : 'text-slate-400 light:text-slate-600 hover:text-slate-100 light:hover:text-slate-900 hover:bg-obsidian-800/60 light:hover:bg-slate-200/60'
-                }`}
+                className="relative py-1 text-xs font-semibold text-text-secondary hover:text-text-primary transition-colors"
               >
-                <Icon className="w-3.5 h-3.5" />
                 <span>{link.label}</span>
+                {active && (
+                  <motion.div
+                    layoutId="activeNavUnderline"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Theme Switcher & Studio Console Access */}
+        {/* Studio Console & Mobile Menu Toggle */}
         <div className="flex items-center gap-3">
-          {/* Obsidian / Solar Theme Toggle */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold font-mono bg-obsidian-850 light:bg-slate-200 border border-obsidian-750 light:border-slate-300 text-slate-300 light:text-slate-700 hover:border-brand-400/50 transition-all"
-            title={`Switch to ${theme === 'dark' ? 'Solar (Light)' : 'Obsidian (Dark)'} theme`}
-          >
-            {theme === 'dark' ? (
-              <>
-                <Moon className="w-3.5 h-3.5 text-brand-400" />
-                <span className="hidden sm:inline">Obsidian</span>
-              </>
-            ) : (
-              <>
-                <Sun className="w-3.5 h-3.5 text-amber-500" />
-                <span className="hidden sm:inline">Solar</span>
-              </>
-            )}
-          </button>
-
-          {/* Studio Console Navigation */}
           {isAuthenticated ? (
             <div className="flex items-center gap-2">
               <Link
                 to="/studio"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-brand-600 hover:bg-brand-500 text-white shadow-glow-cyan transition-colors"
+                className="flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-accent text-white shadow-accent-glow hover:brightness-110 transition-all"
               >
                 <Sliders className="w-3.5 h-3.5" />
                 <span>Studio</span>
               </Link>
               <button
                 onClick={() => logout()}
-                className="p-1.5 text-slate-400 hover:text-rose-400 hover:bg-obsidian-800 rounded-full transition-colors"
-                title="Logout Studio"
+                className="p-1.5 text-text-muted hover:text-error hover:bg-surface-elevated rounded-full transition-colors"
+                title="Logout"
               >
                 <LogOut className="w-4 h-4" />
               </button>
@@ -112,14 +77,57 @@ export const Navbar: React.FC = () => {
           ) : (
             <Link
               to="/studio/login"
-              className="flex items-center gap-1.5 text-xs text-slate-400 light:text-slate-600 hover:text-slate-100 light:hover:text-slate-900 transition-colors px-3 py-1.5 rounded-full hover:bg-obsidian-850 light:hover:bg-slate-200"
+              className="flex items-center gap-1.5 text-xs text-text-secondary hover:text-text-primary transition-colors px-3 py-1.5 rounded-full hover:bg-surface-elevated"
             >
-              <Sliders className="w-3.5 h-3.5 text-brand-400" />
+              <Sliders className="w-3.5 h-3.5 text-accent" />
               <span className="hidden sm:inline">Studio</span>
             </Link>
           )}
+
+          {/* Mobile Hamburger Button */}
+          <button
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden p-2 text-text-secondary hover:text-text-primary rounded-lg focus:outline-none"
+            aria-label="Toggle Navigation Menu"
+          >
+            {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Slide-Down Menu with Staggered Links */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden border-b border-border bg-surface-elevated px-4 pt-2 pb-6 space-y-2 overflow-hidden"
+          >
+            {navLinks.map((link, idx) => (
+              <motion.div
+                key={link.path}
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: idx * 0.05 }}
+              >
+                <Link
+                  to={link.path}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`block px-4 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
+                    isActive(link.path)
+                      ? 'bg-accent text-white'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface'
+                  }`}
+                >
+                  {link.label}
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

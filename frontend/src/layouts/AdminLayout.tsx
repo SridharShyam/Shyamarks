@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import {
   Award,
@@ -9,13 +9,16 @@ import {
   LayoutDashboard,
   LogOut,
   ExternalLink,
-  Sliders
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
 
 export const AdminLayout: React.FC = () => {
   const location = useLocation();
   const { user, logout } = useAuth();
+  const [collapsed, setCollapsed] = useState(false);
 
   const isActive = (path: string) => {
     if (path === '/studio') return location.pathname === '/studio' || location.pathname === '/admin';
@@ -32,70 +35,91 @@ export const AdminLayout: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-obsidian-950 light:bg-slate-50 text-slate-100 flex flex-col transition-colors duration-300">
-      {/* Top Studio Header Bar */}
-      <header className="sticky top-0 z-40 bg-obsidian-900/90 light:bg-white/90 border-b border-obsidian-750/80 light:border-slate-200 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Link to="/studio" className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-brand-600 to-cyanGlow-400 flex items-center justify-center text-white font-extrabold text-sm shadow-glow-cyan">
+    <div className="min-h-screen bg-background text-text-primary flex transition-colors duration-300">
+      {/* Collapsible Left Sidebar Layout */}
+      <motion.aside
+        animate={{ width: collapsed ? 64 : 240 }}
+        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        className="sticky top-0 h-screen bg-surface border-r border-border flex flex-col justify-between shrink-0 z-40 overflow-hidden"
+      >
+        <div>
+          {/* Studio Brand Header */}
+          <div className="h-16 px-4 flex items-center justify-between border-b border-border">
+            <Link to="/studio" className="flex items-center gap-2.5 overflow-hidden">
+              <div className="w-8 h-8 rounded-lg bg-accent flex items-center justify-center text-white font-heading font-bold text-sm shrink-0 shadow-accent-glow">
                 S
               </div>
-              <span className="font-extrabold text-slate-100 light:text-slate-900 tracking-tight text-base">
-                Shyamarks <span className="text-brand-400 font-mono text-xs font-normal">/ Studio Console</span>
-              </span>
+              {!collapsed && (
+                <span className="font-heading font-extrabold text-text-primary text-sm whitespace-nowrap">
+                  Studio <span className="text-accent text-xs font-mono font-normal">Console</span>
+                </span>
+              )}
             </Link>
-          </div>
-
-          <div className="flex items-center gap-4">
-            <Link
-              to="/"
-              className="flex items-center gap-1.5 text-xs text-slate-400 light:text-slate-600 hover:text-brand-300 font-medium px-3 py-1.5 rounded-lg hover:bg-obsidian-850 light:hover:bg-slate-200 transition-colors"
+            <button
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-1.5 rounded-lg text-text-muted hover:text-text-primary hover:bg-surface-elevated transition-colors"
+              title={collapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
             >
-              <span>View Portfolio View</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </Link>
-
-            {user && (
-              <div className="flex items-center gap-3 border-l border-obsidian-750 light:border-slate-300 pl-4 text-xs">
-                <span className="font-mono text-slate-300 light:text-slate-700 hidden sm:inline">{user.email}</span>
-                <button
-                  onClick={() => logout()}
-                  className="flex items-center gap-1 text-slate-400 hover:text-rose-400 p-1.5 rounded-lg hover:bg-obsidian-850 transition-colors"
-                  title="Logout Studio"
-                >
-                  <LogOut className="w-4 h-4" />
-                </button>
-              </div>
-            )}
+              {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
+            </button>
           </div>
+
+          {/* Navigation Links */}
+          <nav className="p-3 space-y-1.5">
+            {studioNav.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  title={collapsed ? item.label : undefined}
+                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                    active
+                      ? 'bg-accent text-white shadow-accent-glow'
+                      : 'text-text-secondary hover:text-text-primary hover:bg-surface-elevated'
+                  }`}
+                >
+                  <Icon className="w-4 h-4 shrink-0" />
+                  {!collapsed && <span>{item.label}</span>}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Studio Sub-nav Tab Bar */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center gap-1.5 overflow-x-auto border-t border-obsidian-800 light:border-slate-200 py-1.5">
-          {studioNav.map((item) => {
-            const Icon = item.icon;
-            const active = isActive(item.path);
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                  active
-                    ? 'bg-brand-500 text-white shadow-glow-cyan'
-                    : 'text-slate-400 light:text-slate-600 hover:text-slate-100 light:hover:text-slate-900 hover:bg-obsidian-800/60 light:hover:bg-slate-200'
-                }`}
+        {/* Sidebar Footer */}
+        <div className="p-3 border-t border-border space-y-2">
+          <Link
+            to="/"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-text-secondary hover:text-text-primary hover:bg-surface-elevated transition-colors whitespace-nowrap"
+            title="View Portfolio"
+          >
+            <ExternalLink className="w-4 h-4 shrink-0 text-accent" />
+            {!collapsed && <span>Portfolio View</span>}
+          </Link>
+
+          {user && (
+            <div className="flex items-center justify-between pt-2 border-t border-border px-1">
+              {!collapsed && (
+                <span className="font-mono text-[10px] text-text-muted truncate max-w-[140px]">
+                  {user.email}
+                </span>
+              )}
+              <button
+                onClick={() => logout()}
+                className="p-1.5 text-text-muted hover:text-error hover:bg-surface-elevated rounded-lg transition-colors"
+                title="Logout Studio Console"
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
-      </header>
+      </motion.aside>
 
-      {/* Main Studio Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+      {/* Main Studio Work Area */}
+      <main className="flex-1 p-8 overflow-y-auto">
         <Outlet />
       </main>
     </div>

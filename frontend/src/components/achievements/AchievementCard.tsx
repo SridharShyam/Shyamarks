@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Award, Calendar, ExternalLink, FileText, Sparkles, CheckCircle } from 'lucide-react';
+import { Award, Calendar, ExternalLink, FileText, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import { Achievement } from '../../types';
@@ -17,10 +17,10 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
   const handleConfetti = (e: React.MouseEvent) => {
     e.stopPropagation();
     confetti({
-      particleCount: 40,
+      particleCount: 45,
       spread: 60,
       origin: { y: 0.7 },
-      colors: ['#38bdf8', '#0ea5e9', '#06b6d4', '#10b981'],
+      colors: ['#6C63FF', '#22D3A5', '#F59E0B', '#38BDF8'],
     });
     setIsLightboxOpen(true);
   };
@@ -28,29 +28,41 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
   const getTypeBadgeColor = (type: string) => {
     switch (type) {
       case 'Certification':
-        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
+        return 'bg-violet-500/10 text-violet-400 border-violet-500/30';
       case 'Internship':
-        return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
-      case 'Project':
-        return 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30';
-      case 'Award':
-        return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+        return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
       case 'Virtual Experience':
+        return 'bg-blue-500/10 text-blue-400 border-blue-500/30';
+      case 'Workshop':
+        return 'bg-amber-500/10 text-amber-400 border-amber-500/30';
+      case 'Course':
+        return 'bg-sky-500/10 text-sky-400 border-sky-500/30';
+      case 'Competition':
+        return 'bg-rose-500/10 text-rose-400 border-rose-500/30';
+      case 'Award':
+        return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
+      case 'Project':
+        return 'bg-purple-500/10 text-purple-400 border-purple-500/30';
+      case 'Hackathon':
+        return 'bg-orange-500/10 text-orange-400 border-orange-500/30';
+      case 'Training':
+        return 'bg-teal-500/10 text-teal-400 border-teal-500/30';
+      case 'Publication':
         return 'bg-indigo-500/10 text-indigo-400 border-indigo-500/30';
       default:
-        return 'bg-slate-500/10 text-slate-300 border-slate-500/30';
+        return 'bg-slate-500/10 text-slate-400 border-slate-500/30';
     }
   };
 
   return (
     <>
       <motion.div
-        whileHover={{ y: -6, scale: 1.01 }}
+        whileHover={{ y: -4, scale: 1.01 }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        className="glass-card-hover rounded-2xl p-6 flex flex-col justify-between shadow-lg relative group overflow-hidden border border-obsidian-750 light:border-slate-200"
+        className="glass-card-hover rounded-2xl p-6 flex flex-col justify-between relative group overflow-hidden border border-border"
       >
-        {/* Subtle Top Gradient Line */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-500 via-cyanGlow-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+        {/* Subtle Top Accent Line */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-accent via-emerald-400 to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
 
         <div>
           {/* Header Badge Row */}
@@ -80,53 +92,53 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
             {(achievement.file_url || achievement.preview_image_url) && (
               <button
                 onClick={handleConfetti}
-                className="p-1.5 rounded-lg bg-obsidian-850 hover:bg-brand-500/20 text-slate-400 hover:text-brand-300 border border-obsidian-750 transition-all shrink-0 hover:scale-110"
+                className="p-1.5 rounded-lg bg-surface-elevated hover:bg-accent/20 text-text-muted hover:text-accent border border-border transition-all shrink-0 hover:scale-110"
                 title="Quick Evidence Preview & Proof Verification"
               >
-                <FileText className="w-4 h-4 text-brand-400" />
+                <FileText className="w-4 h-4 text-accent" />
               </button>
             )}
           </div>
 
           {/* Title */}
-          <Link to={`/achievements/${achievement.slug}`} className="block group-hover:text-brand-300 transition-colors">
-            <h4 className="text-base font-bold text-slate-100 light:text-slate-900 line-clamp-2 mb-2 leading-snug">
+          <Link to={`/achievements/${achievement.slug}`} className="block group-hover:text-accent transition-colors">
+            <h3 className="font-heading text-h3 font-bold text-text-primary line-clamp-2 mb-2 leading-snug">
               {achievement.title}
-            </h4>
+            </h3>
           </Link>
 
           {/* Issuer & Date */}
-          <div className="flex items-center gap-3 text-xs text-slate-400 mb-3">
+          <div className="flex items-center gap-3 text-xs text-text-secondary mb-3">
             {achievement.issuer && (
-              <span className="font-semibold text-slate-300 light:text-slate-700 truncate max-w-[180px]">
+              <span className="font-semibold text-text-primary truncate max-w-[180px]">
                 {achievement.issuer.name}
               </span>
             )}
-            <span className="flex items-center gap-1 font-mono text-[11px] text-slate-400">
-              <Calendar className="w-3 h-3 text-brand-400" />
+            <span className="flex items-center gap-1 font-mono text-[11px] text-text-muted">
+              <Calendar className="w-3 h-3 text-accent" />
               {achievement.issued_date}
             </span>
           </div>
 
           {/* Description */}
-          <p className="text-xs text-slate-300/90 light:text-slate-600 line-clamp-3 mb-4 leading-relaxed">
+          <p className="text-xs text-text-secondary line-clamp-3 mb-4 leading-relaxed font-sans">
             {achievement.description}
           </p>
 
           {/* Skill tags */}
           {achievement.skills && achievement.skills.length > 0 && (
             <div className="flex flex-wrap gap-1.5 mb-4">
-              {achievement.skills.slice(0, 4).map((skill) => (
+              {achievement.skills.slice(0, 3).map((skill) => (
                 <span
                   key={skill.id}
-                  className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-obsidian-900/80 light:bg-slate-200 text-slate-300 light:text-slate-700 border border-obsidian-750 light:border-slate-300 hover:border-brand-400/40 transition-colors"
+                  className="px-2 py-0.5 rounded-md text-[11px] font-mono bg-surface-elevated text-text-secondary border border-border hover:border-accent/40 transition-colors"
                 >
                   {skill.name}
                 </span>
               ))}
-              {achievement.skills.length > 4 && (
-                <span className="px-1.5 py-0.5 rounded-md text-[10px] font-mono text-slate-400 bg-obsidian-900 border border-obsidian-750">
-                  +{achievement.skills.length - 4}
+              {achievement.skills.length > 3 && (
+                <span className="px-1.5 py-0.5 rounded-md text-[10px] font-mono text-text-muted bg-surface-elevated border border-border">
+                  +{achievement.skills.length - 3}
                 </span>
               )}
             </div>
@@ -134,17 +146,17 @@ export const AchievementCard: React.FC<AchievementCardProps> = ({ achievement, s
         </div>
 
         {/* Footer */}
-        <div className="pt-3 border-t border-obsidian-750/60 light:border-slate-200 flex items-center justify-between text-xs">
+        <div className="pt-3 border-t border-border flex items-center justify-between text-xs">
           <Link
             to={`/achievements/${achievement.slug}`}
-            className="text-brand-400 hover:text-brand-300 font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
+            className="text-accent hover:underline font-semibold inline-flex items-center gap-1 group-hover:translate-x-1 transition-transform"
           >
-            <span>View Proof Detail</span>
+            <span>→ View Achievement</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
 
           {achievement.credential_id && (
-            <span className="font-mono text-[10px] text-slate-400 truncate max-w-[120px]" title={`ID: ${achievement.credential_id}`}>
+            <span className="font-mono text-[10px] text-text-muted truncate max-w-[120px]" title={`ID: ${achievement.credential_id}`}>
               ID: {achievement.credential_id}
             </span>
           )}

@@ -1,7 +1,12 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './context/AuthContext';
+import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './context/ToastContext';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { ThemeToggleFloating } from './components/ui/ThemeToggleFloating';
+import { AnimatePresence, motion } from 'framer-motion';
 
 // Layouts
 import { PublicLayout } from './layouts/PublicLayout';
@@ -36,60 +41,85 @@ const queryClient = new QueryClient({
   },
 });
 
+const AnimatedRoutes: React.FC = () => {
+  const location = useLocation();
+
+  return (
+    <AnimatePresence mode="wait">
+      <motion.div
+        key={location.pathname}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.2 }}
+      >
+        <Routes location={location}>
+          {/* Public Routes */}
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/achievements" element={<AchievementsPage />} />
+            <Route path="/achievements/:slug" element={<AchievementDetailPage />} />
+            <Route path="/skills" element={<SkillsPage />} />
+            <Route path="/projects" element={<ProjectsPage />} />
+            <Route path="/timeline" element={<TimelinePage />} />
+          </Route>
+
+          {/* Studio Console Authentication Route */}
+          <Route path="/studio/login" element={<AdminLoginPage />} />
+          <Route path="/admin/login" element={<Navigate to="/studio/login" replace />} />
+
+          {/* Protected Studio Console Routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route element={<AdminLayout />}>
+              <Route path="/studio" element={<AdminDashboardPage />} />
+              <Route path="/admin" element={<Navigate to="/studio" replace />} />
+
+              <Route path="/studio/achievements" element={<AdminAchievementsPage />} />
+              <Route path="/admin/achievements" element={<Navigate to="/studio/achievements" replace />} />
+
+              <Route path="/studio/achievements/new" element={<AdminAchievementFormPage />} />
+              <Route path="/admin/achievements/new" element={<Navigate to="/studio/achievements/new" replace />} />
+
+              <Route path="/studio/achievements/:id/edit" element={<AdminAchievementFormPage />} />
+              <Route path="/admin/achievements/:id/edit" element={<Navigate to="/studio/achievements/:id/edit" replace />} />
+
+              <Route path="/studio/skills" element={<AdminSkillsPage />} />
+              <Route path="/admin/skills" element={<Navigate to="/studio/skills" replace />} />
+
+              <Route path="/studio/projects" element={<AdminProjectsPage />} />
+              <Route path="/admin/projects" element={<Navigate to="/studio/projects" replace />} />
+
+              <Route path="/studio/experiences" element={<AdminExperiencesPage />} />
+              <Route path="/admin/experiences" element={<Navigate to="/studio/experiences" replace />} />
+
+              <Route path="/studio/issuers" element={<AdminIssuersPage />} />
+              <Route path="/admin/issuers" element={<Navigate to="/studio/issuers" replace />} />
+            </Route>
+          </Route>
+
+          {/* Fallback wildcard redirect */}
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </motion.div>
+    </AnimatePresence>
+  );
+};
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Public Routes */}
-            <Route element={<PublicLayout />}>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/achievements" element={<AchievementsPage />} />
-              <Route path="/achievements/:slug" element={<AchievementDetailPage />} />
-              <Route path="/skills" element={<SkillsPage />} />
-              <Route path="/projects" element={<ProjectsPage />} />
-              <Route path="/timeline" element={<TimelinePage />} />
-            </Route>
-
-            {/* Studio Console Authentication Route */}
-            <Route path="/studio/login" element={<AdminLoginPage />} />
-            <Route path="/admin/login" element={<Navigate to="/studio/login" replace />} />
-
-            {/* Protected Studio Console Routes */}
-            <Route element={<ProtectedRoute />}>
-              <Route element={<AdminLayout />}>
-                <Route path="/studio" element={<AdminDashboardPage />} />
-                <Route path="/admin" element={<Navigate to="/studio" replace />} />
-
-                <Route path="/studio/achievements" element={<AdminAchievementsPage />} />
-                <Route path="/admin/achievements" element={<Navigate to="/studio/achievements" replace />} />
-
-                <Route path="/studio/achievements/new" element={<AdminAchievementFormPage />} />
-                <Route path="/admin/achievements/new" element={<Navigate to="/studio/achievements/new" replace />} />
-
-                <Route path="/studio/achievements/:id/edit" element={<AdminAchievementFormPage />} />
-                <Route path="/admin/achievements/:id/edit" element={<Navigate to="/studio/achievements/:id/edit" replace />} />
-
-                <Route path="/studio/skills" element={<AdminSkillsPage />} />
-                <Route path="/admin/skills" element={<Navigate to="/studio/skills" replace />} />
-
-                <Route path="/studio/projects" element={<AdminProjectsPage />} />
-                <Route path="/admin/projects" element={<Navigate to="/studio/projects" replace />} />
-
-                <Route path="/studio/experiences" element={<AdminExperiencesPage />} />
-                <Route path="/admin/experiences" element={<Navigate to="/studio/experiences" replace />} />
-
-                <Route path="/studio/issuers" element={<AdminIssuersPage />} />
-                <Route path="/admin/issuers" element={<Navigate to="/studio/issuers" replace />} />
-              </Route>
-            </Route>
-
-            {/* Fallback wildcard redirect */}
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ToastProvider>
+            <ErrorBoundary>
+              <BrowserRouter>
+                <AnimatedRoutes />
+                <ThemeToggleFloating />
+              </BrowserRouter>
+            </ErrorBoundary>
+          </ToastProvider>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 };

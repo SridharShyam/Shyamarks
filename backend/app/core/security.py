@@ -63,10 +63,15 @@ def get_current_user(token: Optional[str] = Depends(oauth2_scheme)):
         user = None
 
     if user is None:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User not found")
 
     user["id"] = str(user["_id"])
     return user
+
+def verify_admin(current_user: dict = Depends(get_current_user)) -> dict:
+    if not current_user.get("is_admin", True):
+        raise HTTPException(status_code=403, detail="Admin privileges required")
+    return current_user
 
 def get_optional_user(token: Optional[str] = Depends(oauth2_scheme)):
     if not token:
