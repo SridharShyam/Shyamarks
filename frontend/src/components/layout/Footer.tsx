@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
               </span>
             </p>
             <p className="text-[11px] text-slate-400 light:text-slate-500 mt-0.5">
-              Shyamarks — Mark Every Milestone. Engineered by Sridhar Shyam.
+              Shyamarks — Mark Every Milestone. Engineered by Shyam.
             </p>
           </div>
         </div>

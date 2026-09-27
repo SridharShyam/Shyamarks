@@ -9,7 +9,7 @@ export function exportEvidenceDossier(
   
   let md = `# Shyamarks — Verified Evidence Dossier\n`;
   md += `**Generated Date**: ${dateStr}\n`;
-  md += `**Author**: Sridhar Shyam\n\n`;
+  md += `**Author**: Shyam\n\n`;
   
   md += `## 🏆 Verified Credentials & Achievements (${achievements.length})\n\n`;
   achievements.forEach((ach, i) => {

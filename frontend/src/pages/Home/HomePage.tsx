@@ -86,7 +86,7 @@ export const HomePage: React.FC = () => {
             </div>
 
             <p className="text-xs sm:text-sm text-slate-300/80 light:text-slate-600 max-w-xl leading-relaxed">
-              A structured personal achievement & credential evidence management platform designed by <strong>Sridhar Shyam</strong>. Quantifies skill mastery through dynamic Claim Confidence Scores (CCS), archives verified certificates, and traces continuous professional growth.
+              A structured personal achievement & credential evidence management platform designed by <strong>Shyam</strong>. Quantifies skill mastery through dynamic Claim Confidence Scores (CCS), archives verified certificates, and traces continuous professional growth.
             </p>
 
             {/* Hero CTA Buttons */}
@@ -109,7 +109,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          {/* Right Column: Sridhar Shyam Interactive Profile Card */}
+          {/* Right Column: Shyam Interactive Profile Card */}
           <div className="lg:col-span-5">
             <div className="glass-card rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-brand-500/10 rounded-full blur-2xl pointer-events-none"></div>
@@ -118,12 +118,12 @@ export const HomePage: React.FC = () => {
               <div className="flex items-start gap-4">
                 <div className="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-600 via-brand-500 to-cyanGlow-400 p-0.5 shadow-glow-cyan shrink-0">
                   <div className="w-full h-full bg-obsidian-900 rounded-[14px] flex items-center justify-center text-white font-black text-2xl">
-                    SS
+                    S
                   </div>
                 </div>
                 <div>
                   <h3 className="text-xl font-extrabold text-slate-100 light:text-slate-900">
-                    Sridhar Shyam
+                    Shyam
                   </h3>
                   <p className="text-xs font-semibold text-brand-400 font-mono mt-0.5">
                     AI Engineer & Data Scientist
