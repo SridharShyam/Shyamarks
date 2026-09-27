@@ -10,15 +10,13 @@ import {
   Sparkles,
   TrendingUp,
   Terminal,
-  Cpu,
-  Brain,
-  Database,
-  CheckCircle2,
+  Download,
   Calendar
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { AchievementCard } from '../../components/achievements/AchievementCard';
 import { SkillCard } from '../../components/skills/SkillCard';
+import { exportEvidenceDossier } from '../../utils/exportEvidence';
 
 export const HomePage: React.FC = () => {
   const { data: achievementsRes } = useQuery({
@@ -51,6 +49,10 @@ export const HomePage: React.FC = () => {
   }, [skills]);
 
   const latestMilestones = achievements.slice(0, 5);
+
+  const handleExportDossier = () => {
+    exportEvidenceDossier(achievements, skills || [], projects || []);
+  };
 
   return (
     <div className="space-y-16 pb-16">
@@ -96,12 +98,14 @@ export const HomePage: React.FC = () => {
                 <span>Explore Achievement Ledger</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link
-                to="/skills"
-                className="px-6 py-3 rounded-xl bg-obsidian-850 light:bg-slate-200 hover:bg-obsidian-800 border border-obsidian-750 light:border-slate-300 text-slate-200 light:text-slate-800 font-semibold text-xs transition-all"
+              <button
+                onClick={handleExportDossier}
+                className="px-5 py-3 rounded-xl bg-obsidian-850 light:bg-slate-200 hover:bg-obsidian-800 border border-obsidian-750 light:border-slate-300 text-slate-200 light:text-slate-800 font-semibold text-xs transition-all flex items-center gap-2"
+                title="Download full Markdown evidence dossier"
               >
-                View Skill Confidence (CCS)
-              </Link>
+                <Download className="w-4 h-4 text-brand-400" />
+                <span>Export Evidence Brief</span>
+              </button>
             </div>
           </div>
 
@@ -233,7 +237,7 @@ export const HomePage: React.FC = () => {
           </div>
         ) : (
           <div className="glass-card rounded-2xl p-12 text-center text-slate-400 text-xs">
-            No featured achievements listed yet. Add items via the Admin dashboard.
+            No featured achievements listed yet. Add items via the Studio Console.
           </div>
         )}
       </section>

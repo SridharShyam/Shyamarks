@@ -1,4 +1,10 @@
-# Python / Byte-compiled
+# Environment files & Secrets
+.env
+.env.*
+!.env.example
+!.env*.example
+
+# Python / Byte-compiled / Virtualenvs
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,20 +13,31 @@ __pycache__/
 env/
 venv/
 ENV/
-.env
+env.bak/
+venv.bak/
+*.sqlite3
+*.db
 
-# Node / React
+# Local uploads & static media
+backend/app/static/uploads/*
+!backend/app/static/uploads/.gitkeep
+
+# Node / React Build Output
 node_modules/
 dist/
 build/
 .cache/
+.parcel-cache/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE & System
+# IDE & OS System files
 .vscode/
 .idea/
+*.swp
+*.swo
 .DS_Store
 Thumbs.db
+ehthumbs.db
