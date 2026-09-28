@@ -18,7 +18,7 @@ def list_achievements(
     featured: Optional[bool] = Query(None),
     sort: str = Query("newest"),
     page: int = Query(1, ge=1),
-    limit: int = Query(12, ge=1, le=100),
+    limit: int = Query(12, ge=1, le=10000),
     current_user: Optional[dict] = Depends(get_optional_user)
 ):
     # Public endpoints return only public achievements unless admin

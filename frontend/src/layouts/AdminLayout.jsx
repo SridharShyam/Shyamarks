@@ -7,6 +7,7 @@ import {
   Briefcase,
   Building2,
   LayoutDashboard,
+  UploadCloud,
   LogOut,
   ExternalLink,
   ChevronLeft,
@@ -32,6 +33,7 @@ export const AdminLayout = () => {
     { path: '/studio/projects', label: 'Projects Manager', icon: FolderGit2 },
     { path: '/studio/experiences', label: 'Experience Roles', icon: Briefcase },
     { path: '/studio/issuers', label: 'Issuers Directory', icon: Building2 },
+    { path: '/studio/uploads', label: 'Uploads Assets', icon: UploadCloud },
   ];
 
   return (

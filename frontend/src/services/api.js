@@ -321,4 +321,19 @@ export const api = {
     });
     return handleResponse(res);
   },
+
+  getUploads: async () => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/uploads`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(res);
+  },
+
+  deleteUpload: async (filename) => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/uploads/${filename}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(res);
+  },
 };

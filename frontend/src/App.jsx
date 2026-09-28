@@ -32,6 +32,7 @@ import { AdminSkillsPage } from './pages/Admin/AdminSkillsPage';
 import { AdminProjectsPage } from './pages/Admin/AdminProjectsPage';
 import { AdminExperiencesPage } from './pages/Admin/AdminExperiencesPage';
 import { AdminIssuersPage } from './pages/Admin/AdminIssuersPage';
+import { AdminUploadsPage } from './pages/Admin/AdminUploadsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,6 +99,9 @@ const AnimatedRoutes = () => {
 
               <Route path="/studio/issuers" element={<AdminIssuersPage />} />
               <Route path="/admin/issuers" element={<Navigate to="/studio/issuers" replace />} />
+
+              <Route path="/studio/uploads" element={<AdminUploadsPage />} />
+              <Route path="/admin/uploads" element={<Navigate to="/studio/uploads" replace />} />
             </Route>
           </Route>
 

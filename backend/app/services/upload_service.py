@@ -88,8 +88,43 @@ async def upload_file(file: UploadFile) -> dict:
     preview_image_url = file_url if not is_pdf else None
 
     return {
+        "filename": unique_filename,
         "file_url": file_url,
         "file_type": file_type,
         "file_size": file_size,
         "preview_image_url": preview_image_url
     }
+
+def list_uploads() -> list:
+    items = []
+    if not os.path.exists(LOCAL_UPLOADS_DIR):
+        return items
+
+    for filename in os.listdir(LOCAL_UPLOADS_DIR):
+        filepath = os.path.join(LOCAL_UPLOADS_DIR, filename)
+        if os.path.isfile(filepath):
+            stat = os.stat(filepath)
+            ext = os.path.splitext(filename)[1].lower()
+            is_pdf = ext == ".pdf"
+            file_type = "pdf" if is_pdf else "image"
+            file_url = f"/static/uploads/{filename}"
+            items.append({
+                "filename": filename,
+                "file_url": file_url,
+                "file_type": file_type,
+                "file_size": stat.st_size,
+                "created_at": stat.st_ctime,
+                "preview_image_url": file_url if not is_pdf else None
+            })
+    # Sort newest first
+    items.sort(key=lambda x: x["created_at"], reverse=True)
+    return items
+
+def delete_upload(filename: str) -> bool:
+    # Protect against path traversal
+    safe_filename = os.path.basename(filename)
+    filepath = os.path.join(LOCAL_UPLOADS_DIR, safe_filename)
+    if os.path.exists(filepath) and os.path.isfile(filepath):
+        os.remove(filepath)
+        return True
+    return False

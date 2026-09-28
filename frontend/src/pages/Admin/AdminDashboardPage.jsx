@@ -7,6 +7,7 @@ import {
   FolderGit2,
   Briefcase,
   Building2,
+  UploadCloud,
   Plus,
   Globe,
   ShieldCheck,
@@ -39,6 +40,11 @@ export const AdminDashboardPage = () => {
   const { data: issuers } = useQuery({
     queryKey: ['admin-issuers-all'],
     queryFn: () => api.getIssuers(),
+  });
+
+  const { data: uploads } = useQuery({
+    queryKey: ['admin-uploads-all'],
+    queryFn: () => api.getUploads(),
   });
 
   const achievements = achievementsRes?.items || [];
@@ -79,7 +85,7 @@ export const AdminDashboardPage = () => {
       </div>
 
       {/* Main Metric Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
         <Link to="/studio/achievements" className="glass-card-hover rounded-2xl p-5 shadow-lg">
           <div className="flex items-center justify-between">
             <span className="text-xs text-text-secondary font-medium font-sans">Achievements</span>
@@ -123,6 +129,15 @@ export const AdminDashboardPage = () => {
           </div>
           <div className="text-3xl font-black font-mono text-text-primary mt-2">{issuers?.length || 0}</div>
           <div className="text-[11px] text-amber-400 mt-1 font-mono">Manage Issuers &rarr;</div>
+        </Link>
+
+        <Link to="/studio/uploads" className="glass-card-hover rounded-2xl p-5 shadow-lg">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-text-secondary font-medium font-sans">Upload Assets</span>
+            <UploadCloud className="w-5 h-5 text-sky-400" />
+          </div>
+          <div className="text-3xl font-black font-mono text-text-primary mt-2">{uploads?.length || 0}</div>
+          <div className="text-[11px] text-sky-400 mt-1 font-mono">Manage Uploads &rarr;</div>
         </Link>
       </div>
 
