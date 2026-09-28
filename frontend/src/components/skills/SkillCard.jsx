@@ -11,7 +11,7 @@ export const SkillCard = ({ skill }) => {
     accelerating: {
       label: 'Accelerating',
       icon: TrendingUp,
-      style: 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
+      style: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-500/30',
       tooltip: skill.last_evidence_date
         ? `Evidence added within last 6 months (${skill.last_evidence_date})`
         : 'Evidence added within last 6 months',
@@ -19,7 +19,7 @@ export const SkillCard = ({ skill }) => {
     stable: {
       label: 'Stable',
       icon: Minus,
-      style: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+      style: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-500/30',
       tooltip: skill.last_evidence_date
         ? `Last evidence added 6–18 months ago (${skill.last_evidence_date})`
         : 'Last evidence 6–18 months ago',
@@ -27,7 +27,7 @@ export const SkillCard = ({ skill }) => {
     cooling: {
       label: 'Cooling',
       icon: TrendingDown,
-      style: 'bg-rose-500/15 text-rose-400/80 border-rose-500/30',
+      style: 'bg-rose-500/15 text-rose-800 dark:text-rose-300 border-rose-500/30',
       tooltip: skill.last_evidence_date
         ? `No evidence added in 18+ months (${skill.last_evidence_date})`
         : 'No evidence recorded in 18+ months',
