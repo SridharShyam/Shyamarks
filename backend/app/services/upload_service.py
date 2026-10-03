@@ -1,11 +1,15 @@
 import os
 import uuid
+import magic
 import cloudinary
 import cloudinary.uploader
 from fastapi import UploadFile, HTTPException
 from app.core.config import settings
 
-ALLOWED_TYPES = {
+ALLOWED_MIME_TYPES = {
+    "image/jpeg", "image/png", "image/webp", "application/pdf"
+}
+MIME_TO_EXTENSION = {
     "image/jpeg": ".jpg",
     "image/png": ".png",
     "image/webp": ".webp",
@@ -17,36 +21,31 @@ LOCAL_UPLOADS_DIR = os.path.join(os.path.dirname(os.path.dirname(__file__)), "st
 os.makedirs(LOCAL_UPLOADS_DIR, exist_ok=True)
 
 async def upload_file(file: UploadFile) -> dict:
-    content_type = file.content_type
-    
-    # 1. Validate content type against ALLOWED_TYPES
-    if content_type not in ALLOWED_TYPES:
-        filename_ext = file.filename.split('.')[-1].lower() if file.filename and '.' in file.filename else ''
-        if filename_ext in ['jpg', 'jpeg']:
-            content_type = "image/jpeg"
-        elif filename_ext == 'png':
-            content_type = "image/png"
-        elif filename_ext == 'webp':
-            content_type = "image/webp"
-        elif filename_ext == 'pdf':
-            content_type = "application/pdf"
-        else:
-            raise HTTPException(
-                status_code=422,
-                detail=f"Unsupported file type '{content_type}'. Allowed types: PDF, PNG, JPG, JPEG, WEBP."
-            )
-
-    # 2. Read file into memory, validate actual size
+    # 1. Read entire file into memory
     contents = await file.read()
     file_size = len(contents)
+
+    # 2. Validate size
     if file_size > MAX_SIZE_BYTES:
         raise HTTPException(
-            status_code=422,
-            detail=f"File size exceeds maximum limit of 10MB ({file_size} bytes provided)."
+            status_code=413,
+            detail=f"File exceeds maximum limit of 10MB ({file_size} bytes provided)."
         )
 
-    ext = ALLOWED_TYPES.get(content_type, ".bin")
-    is_pdf = content_type == "application/pdf"
+    # 3. Detect TRUE MIME type from file bytes (not header)
+    try:
+        detected_mime = magic.from_buffer(contents[:2048], mime=True)
+    except Exception:
+        detected_mime = file.content_type
+
+    if detected_mime not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=422,
+            detail=f"File type '{detected_mime}' is not allowed. Allowed types: PDF, PNG, JPG, JPEG, WEBP."
+        )
+
+    ext = MIME_TO_EXTENSION.get(detected_mime, ".bin")
+    is_pdf = detected_mime == "application/pdf"
     file_type = "pdf" if is_pdf else "image"
 
     # 4. Generate a unique filename

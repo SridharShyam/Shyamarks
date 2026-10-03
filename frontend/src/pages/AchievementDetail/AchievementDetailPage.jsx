@@ -22,6 +22,7 @@ import {
 import { api } from '../../services/api';
 import { CertificateLightbox } from '../../components/ui/CertificateLightbox';
 import { useToast } from '../../context/ToastContext';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { fadeUp } from '../../lib/animations';
 
 export const AchievementDetailPage = () => {
@@ -38,6 +39,8 @@ export const AchievementDetailPage = () => {
     queryFn: () => api.getAchievementBySlug(slug),
     enabled: !!slug,
   });
+
+  usePageTitle(achievement?.title || 'Achievement Detail');
 
   const handleCopyId = () => {
     if (!achievement?.credential_id) return;
@@ -157,17 +160,41 @@ export const AchievementDetailPage = () => {
             )}
           </div>
 
-          {/* Verification QR Code Card */}
-          <div className="bg-surface-elevated border border-border p-4 rounded-xl flex flex-col items-center gap-3 shrink-0 self-start sm:self-auto shadow-md">
-            <QRCodeSVG value={verifyUrl} size={100} bgColor="#111118" fgColor="#6C63FF" />
-            <span className="text-label text-text-muted">Scan to verify</span>
-            <button
-              onClick={handleCopyLink}
-              className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-surface border border-border hover:border-accent text-text-secondary hover:text-accent transition-all"
-            >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
-              <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-            </button>
+          {/* Dual QR Codes Cards Section */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 shrink-0 self-start sm:self-auto">
+            {/* 1. Share Achievement QR Card */}
+            <div className="bg-surface-elevated border border-border p-4 rounded-xl flex flex-col items-center gap-2.5 shadow-md min-w-[150px]">
+              <span className="text-[11px] font-bold text-text-primary font-mono uppercase tracking-wider">Share Link</span>
+              <QRCodeSVG value={window.location.href} size={90} bgColor="transparent" fgColor="var(--accent)" />
+              <button
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  setCopiedLink(true);
+                  showToast('Share link copied to clipboard!', 'success');
+                  setTimeout(() => setCopiedLink(false), 2000);
+                }}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-surface border border-border hover:border-accent text-text-secondary hover:text-accent transition-all"
+              >
+                {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                <span>{copiedLink ? 'Copied!' : 'Copy Share Link'}</span>
+              </button>
+            </div>
+
+            {/* 2. Verify Achievement QR Card */}
+            {achievement.fingerprint && (
+              <div className="bg-surface-elevated border border-border p-4 rounded-xl flex flex-col items-center gap-2.5 shadow-md min-w-[150px]">
+                <span className="text-[11px] font-bold text-emerald-400 font-mono uppercase tracking-wider">Verify Fingerprint</span>
+                <QRCodeSVG value={`${window.location.origin}/verify/${achievement.fingerprint}`} size={90} bgColor="transparent" fgColor="#10B981" />
+                <span className="font-mono text-[10px] text-text-muted font-bold tracking-wider">{formattedFp}</span>
+                <button
+                  onClick={handleCopyFingerprint}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold bg-surface border border-border hover:border-emerald-500 text-text-secondary hover:text-emerald-400 transition-all"
+                >
+                  {copiedFp ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{copiedFp ? 'Copied!' : 'Copy Fingerprint'}</span>
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -260,6 +287,24 @@ export const AchievementDetailPage = () => {
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           )}
+          <a
+            href={`https://www.linkedin.com/profile/add?startTask=CERTIFICATION_NAME&name=${encodeURIComponent(
+              achievement.title
+            )}&organizationName=${encodeURIComponent(
+              achievement.issuer?.name || ''
+            )}&issueYear=${achievement.issued_date?.substring(0, 4) || ''}&issueMonth=${
+              achievement.issued_date?.substring(5, 7) || ''
+            }&certUrl=${encodeURIComponent(
+              achievement.verification_url || window.location.href
+            )}&certId=${encodeURIComponent(achievement.credential_id || '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-5 py-2.5 rounded-xl bg-[#0A66C2] hover:bg-[#084e96] text-white font-semibold text-xs transition-colors flex items-center gap-2 shadow-md"
+            title="Add license/certification to your LinkedIn profile"
+          >
+            <span>Add to LinkedIn</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
           {(achievement.file_url || achievement.preview_image_url) && (
             <button
               onClick={() => setIsLightboxOpen(true)}

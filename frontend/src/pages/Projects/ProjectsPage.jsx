@@ -3,8 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { FolderGit2 } from 'lucide-react';
 import { api } from '../../services/api';
 import { ProjectCard } from '../../components/projects/ProjectCard';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const ProjectsPage = () => {
+  usePageTitle('Projects');
   const { data: projects, isLoading } = useQuery({
     queryKey: ['projects-page'],
     queryFn: () => api.getProjects(),

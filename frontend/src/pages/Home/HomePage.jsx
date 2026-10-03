@@ -19,10 +19,12 @@ import { SkillCard } from '../../components/skills/SkillCard';
 import { InteractiveTerminal } from '../../components/ui/InteractiveTerminal';
 import { exportEvidenceDossier } from '../../utils/exportEvidence';
 import { useCountUp } from '../../hooks/useCountUp';
+import { usePageTitle } from '../../hooks/usePageTitle';
 import { RevealOnScroll } from '../../components/ui/RevealOnScroll';
 import { staggerContainer, fadeUp, scaleIn } from '../../lib/animations';
 
 export const HomePage = () => {
+  usePageTitle('');
   const { data: achievementsRes } = useQuery({
     queryKey: ['achievements-home'],
     queryFn: () => api.getAchievements({ limit: 100 }),
@@ -179,7 +181,7 @@ export const HomePage = () => {
               <Award className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-text-primary">{totalAchievements}</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalAchievements.count}</div>
               <div className="text-xs text-text-secondary font-medium">Total Milestones</div>
             </div>
           </motion.div>
@@ -189,7 +191,7 @@ export const HomePage = () => {
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-text-primary">{totalCertifications}</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalCertifications.count}</div>
               <div className="text-xs text-text-secondary font-medium">Certifications</div>
             </div>
           </motion.div>
@@ -199,7 +201,7 @@ export const HomePage = () => {
               <Layers className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-text-primary">{totalSkills}</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalSkills.count}</div>
               <div className="text-xs text-text-secondary font-medium">Verified Skills</div>
             </div>
           </motion.div>
@@ -209,7 +211,7 @@ export const HomePage = () => {
               <FolderGit2 className="w-6 h-6" />
             </div>
             <div>
-              <div className="text-3xl font-black font-mono text-text-primary">{totalProjects}</div>
+              <div className="text-3xl font-black font-mono text-text-primary">{totalProjects.count}</div>
               <div className="text-xs text-text-secondary font-medium">Projects</div>
             </div>
           </motion.div>

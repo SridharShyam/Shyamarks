@@ -4,8 +4,10 @@ import { Calendar, ExternalLink } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { api } from '../../services/api';
 import { TimelineHeatmap } from '../../components/ui/TimelineHeatmap';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const TimelinePage = () => {
+  usePageTitle('Timeline');
   const { data: achievementsRes, isLoading } = useQuery({
     queryKey: ['achievements-timeline'],
     queryFn: () => api.getAchievements({ limit: 1000, sort: 'newest' }),

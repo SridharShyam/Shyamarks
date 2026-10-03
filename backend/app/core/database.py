@@ -54,3 +54,31 @@ def get_db():
     if db_manager.db is None:
         db_manager.connect()
     return db_manager.db
+
+from bson import ObjectId
+from typing import Any
+
+def serialize_doc(doc: dict) -> dict:
+    """Recursively convert ObjectId to str and rename _id to id."""
+    if doc is None:
+        return None
+    out = {}
+    for k, v in doc.items():
+        key = "id" if k == "_id" else k
+        if isinstance(v, ObjectId):
+            out[key] = str(v)
+        elif isinstance(v, dict):
+            out[key] = serialize_doc(v)
+        elif isinstance(v, list):
+            out[key] = [
+                serialize_doc(i) if isinstance(i, dict)
+                else str(i) if isinstance(i, ObjectId)
+                else i
+                for i in v
+            ]
+        else:
+            out[key] = v
+    return out
+
+def serialize_docs(docs: list) -> list:
+    return [serialize_doc(d) for d in docs]

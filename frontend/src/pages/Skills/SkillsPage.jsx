@@ -6,8 +6,10 @@ import { SkillCard } from '../../components/skills/SkillCard';
 import { EvidenceCoverageMatrix } from '../../components/skills/EvidenceCoverageMatrix';
 import { SkillCardSkeleton } from '../../components/ui/Skeleton';
 import { useDebounce } from '../../hooks/useDebounce';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const SkillsPage = () => {
+  usePageTitle('Skills');
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 350);
   const [selectedCategory, setSelectedCategory] = useState('');

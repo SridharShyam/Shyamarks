@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShieldCheck, Award, Layers, Compass, FolderGit2, Calendar, Sun, Moon, Terminal } from 'lucide-react';
+import { ShieldCheck, Award, Layers, Compass, FolderGit2, Calendar, Sun, Moon, Terminal, Search } from 'lucide-react';
 import { useTheme } from '../../context/ThemeContext';
 
 export const Navbar = () => {
@@ -57,6 +57,20 @@ export const Navbar = () => {
 
         {/* Action Controls */}
         <div className="flex items-center gap-3">
+          {/* Cmd+K Search Trigger */}
+          <button
+            onClick={() => {
+              const event = new KeyboardEvent('keydown', { key: 'k', metaKey: true });
+              window.dispatchEvent(event);
+            }}
+            className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-surface-900 border border-border text-text-muted hover:text-text-primary text-xs font-mono transition-all"
+            title="Open Command Palette (Cmd+K)"
+          >
+            <Search className="w-3.5 h-3.5 text-accent" />
+            <span>Search</span>
+            <kbd className="bg-surface-800 px-1.5 py-0.5 rounded text-[10px] border border-border">⌘K</kbd>
+          </button>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}

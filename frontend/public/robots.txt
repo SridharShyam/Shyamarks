@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /studio/
+Disallow: /share/
+
+Sitemap: https://shyamarks.vercel.app/sitemap.xml

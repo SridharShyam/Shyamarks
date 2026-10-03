@@ -1,30 +1,39 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
-export function useCountUp(end, duration = 1500, trigger = true) {
-  const [count, setCount] = useState(0);
+export function useCountUp(
+  target = 0,
+  duration = 1200,
+  startOnMount = false
+) {
+  const [count, setCount] = useState(startOnMount ? 0 : target);
+  const [started, setStarted] = useState(startOnMount);
+  const rafRef = useRef(null);
+
+  const start = () => setStarted(true);
 
   useEffect(() => {
-    if (!trigger) return;
-    let startTimestamp = null;
-    let animationFrameId;
+    if (!started || target === 0) return;
 
-    const step = (timestamp) => {
-      if (!startTimestamp) startTimestamp = timestamp;
-      const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-      const easeOutQuad = 1 - (1 - progress) * (1 - progress);
-      setCount(Math.floor(easeOutQuad * end));
+    const startTime = performance.now();
+    const startValue = 0;
+
+    const tick = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease out cubic
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.round(startValue + (target - startValue) * eased));
 
       if (progress < 1) {
-        animationFrameId = requestAnimationFrame(step);
-      } else {
-        setCount(end);
+        rafRef.current = requestAnimationFrame(tick);
       }
     };
 
-    animationFrameId = requestAnimationFrame(step);
+    rafRef.current = requestAnimationFrame(tick);
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    };
+  }, [started, target, duration]);
 
-    return () => cancelAnimationFrame(animationFrameId);
-  }, [end, duration, trigger]);
-
-  return count;
+  return { count, start };
 }

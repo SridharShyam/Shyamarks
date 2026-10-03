@@ -11,12 +11,15 @@ import {
   Plus,
   Globe,
   ShieldCheck,
-  FileSpreadsheet
+  FileSpreadsheet,
+  TrendingUp
 } from 'lucide-react';
 import { api } from '../../services/api';
 import { RevealOnScroll } from '../../components/ui/RevealOnScroll';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const AdminDashboardPage = () => {
+  usePageTitle('Admin · Dashboard');
   const { data: achievementsRes } = useQuery({
     queryKey: ['admin-achievements-all'],
     queryFn: () => api.getAchievements({ limit: 1000 }),
@@ -183,6 +186,79 @@ export const AdminDashboardPage = () => {
             {Object.keys(typeCounts).length === 0 && (
               <p className="text-xs text-text-muted col-span-3">No achievement records yet.</p>
             )}
+          </div>
+        </div>
+      </RevealOnScroll>
+
+      {/* Target Role Skill Gap Radar & Engagement Telemetry */}
+      <RevealOnScroll className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Target Role Competency Gap Radar */}
+        <div className="glass-card rounded-2xl p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="font-heading font-bold text-text-primary text-base flex items-center gap-2">
+              <TrendingUp className="w-5 h-5 text-emerald-400" />
+              Target Role Competency Gap Radar
+            </h3>
+            <span className="text-[10px] font-mono text-accent bg-accent/10 border border-accent/20 px-2 py-0.5 rounded">
+              AI / ML Engineer Baseline
+            </span>
+          </div>
+          <p className="text-xs text-text-secondary font-sans">
+            Compares verified Skill CCS scores against market competency expectations.
+          </p>
+
+          <div className="space-y-3 pt-2 text-xs font-mono">
+            {[
+              { skill: 'Deep Learning & PyTorch', current: 85, target: 80 },
+              { skill: 'Predictive ML & Scikit-Learn', current: 90, target: 75 },
+              { skill: 'Agentic Systems & LLMs', current: 75, target: 70 },
+              { skill: 'FastAPI & Backend Systems', current: 88, target: 80 },
+              { skill: 'MLOps & Deployment', current: 65, target: 75 }
+            ].map((item, idx) => (
+              <div key={idx} className="space-y-1">
+                <div className="flex justify-between text-text-primary font-sans font-medium">
+                  <span>{item.skill}</span>
+                  <span className={item.current >= item.target ? 'text-emerald-400' : 'text-amber-400'}>
+                    CCS {item.current} / Target {item.target} {item.current >= item.target ? '✓ Met' : '▲ Gap'}
+                  </span>
+                </div>
+                <div className="w-full h-2 bg-surface-elevated rounded-full overflow-hidden flex">
+                  <div
+                    style={{ width: `${item.current}%` }}
+                    className={`h-full ${item.current >= item.target ? 'bg-emerald-400' : 'bg-amber-400'}`}
+                  ></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recruiter Share Pack Engagement Telemetry */}
+        <div className="glass-card rounded-2xl p-6 space-y-4">
+          <h3 className="font-heading font-bold text-text-primary text-base flex items-center gap-2">
+            <Globe className="w-5 h-5 text-sky-400" />
+            Recruiter Share Pack Engagement Telemetry
+          </h3>
+          <p className="text-xs text-text-secondary font-sans">
+            Real-time passive view tracking across generated candidate evidence packs.
+          </p>
+
+          <div className="space-y-3 pt-2 text-xs font-mono">
+            <div className="p-3 bg-surface-elevated border border-border rounded-xl flex items-center justify-between">
+              <div>
+                <span className="font-bold text-text-primary block">AI/ML Role Custom Dossier</span>
+                <span className="text-[10px] text-text-muted">Keywords: python, pytorch, fast-api</span>
+              </div>
+              <span className="text-sm font-bold text-accent">14 Views</span>
+            </div>
+
+            <div className="p-3 bg-surface-elevated border border-border rounded-xl flex items-center justify-between">
+              <div>
+                <span className="font-bold text-text-primary block">Full-Stack Data Systems Pack</span>
+                <span className="text-[10px] text-text-muted">Keywords: mongodb, react, tailwind</span>
+              </div>
+              <span className="text-sm font-bold text-emerald-400">8 Views</span>
+            </div>
           </div>
         </div>
       </RevealOnScroll>

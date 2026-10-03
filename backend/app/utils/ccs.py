@@ -1,20 +1,13 @@
+import json
 from datetime import date, datetime, timezone, timedelta
 from typing import List, Dict, Any
+from app.core.config import settings
 
-EVIDENCE_WEIGHTS = {
-    "Certification": 30,
-    "Internship": 25,
-    "Virtual Experience": 15,
-    "Workshop": 10,
-    "Course": 10,
-    "Project": 20,
-    "Award": 15,
-    "Hackathon": 12,
-    "Competition": 12,
-    "Training": 10,
-    "Publication": 20,
-    "Other": 5,
-}
+def get_evidence_weights() -> dict:
+    try:
+        return json.loads(settings.CCS_EVIDENCE_WEIGHTS)
+    except Exception:
+        return {"Other": 5}
 
 def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
     """
@@ -45,6 +38,8 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
     base_score = 0
     today = date.today()
     most_recent_date = None
+    
+    weights = get_evidence_weights()
 
     for ach in achievements:
         ach_type = ach.get("type", "Other")
@@ -55,7 +50,7 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
 
         # Add weight only once per type (breadth model, not volume model)
         if ach_type not in seen_types:
-            base_score += EVIDENCE_WEIGHTS.get(ach_type, 5)
+            base_score += weights.get(ach_type, 5)
             seen_types.add(ach_type)
 
         # Track most recent evidence date
@@ -74,19 +69,19 @@ def compute_ccs(achievements: List[Dict[str, Any]]) -> dict:
     # Breadth bonus
     breadth_bonus = 0
     if len(seen_types) >= 5:
-        breadth_bonus = 20
+        breadth_bonus = settings.CCS_BREADTH_BONUS_TIER1
     elif len(seen_types) >= 3:
-        breadth_bonus = 10
+        breadth_bonus = settings.CCS_BREADTH_BONUS_TIER2
 
     # Recency bonus & Velocity calculation
     recency_bonus = 0
     if most_recent_date:
         days_since = (today - most_recent_date).days
-        if days_since <= 180:
-            recency_bonus = 15
+        if days_since <= settings.CCS_VELOCITY_ACCELERATING_DAYS:
+            recency_bonus = settings.CCS_RECENCY_BONUS_TIER1
             velocity = "accelerating"
-        elif days_since <= 540:
-            recency_bonus = 10
+        elif days_since <= settings.CCS_VELOCITY_STABLE_DAYS:
+            recency_bonus = settings.CCS_RECENCY_BONUS_TIER2
             velocity = "stable"
         else:
             velocity = "cooling"

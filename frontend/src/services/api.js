@@ -336,4 +336,21 @@ export const api = {
     });
     return handleResponse(res);
   },
+
+  // Share Packs
+  createSharePack: async (jd_text, expires_hours = 72) => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/share-packs`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ jd_text, expires_hours }),
+    });
+    return handleResponse(res);
+  },
+
+  getSharePack: async (token) => {
+    const res = await fetch(`${API_BASE_URL}/api/v1/share-packs/${token}`, {
+      headers: getAuthHeaders(),
+    });
+    return handleResponse(res);
+  },
 };

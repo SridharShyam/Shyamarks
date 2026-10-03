@@ -5,8 +5,10 @@ import { motion } from 'framer-motion';
 import { Compass, HelpCircle, Calendar, ArrowRight, X, Sparkles } from 'lucide-react';
 import { api } from '../../services/api';
 import { fadeUp, staggerContainer } from '../../lib/animations';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const LearningPathsPage = () => {
+  usePageTitle('Learning Paths');
   const [selectedPathInfo, setSelectedPathInfo] = useState(null);
 
   const { data: paths, isLoading } = useQuery({

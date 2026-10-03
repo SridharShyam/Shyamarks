@@ -1,118 +1,120 @@
-from datetime import datetime
-from typing import List, Dict, Any, Set
+from datetime import datetime, timedelta
 from collections import defaultdict
+import uuid
+from typing import List, Dict, Any
 
-def parse_date(date_str: str):
-    if not date_str:
-        return None
-    try:
-        return datetime.strptime(str(date_str).split('T')[0], "%Y-%m-%d").date()
-    except Exception:
-        return None
+class UnionFind:
+    def __init__(self, n: int):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+
+    def find(self, x: int) -> int:
+        while self.parent[x] != x:
+            self.parent[x] = self.parent[self.parent[x]]  # path compression
+            x = self.parent[x]
+        return x
+
+    def union(self, x: int, y: int):
+        px, py = self.find(x), self.find(y)
+        if px == py:
+            return
+        if self.rank[px] < self.rank[py]:
+            px, py = py, px
+        self.parent[py] = px
+        if self.rank[px] == self.rank[py]:
+            self.rank[px] += 1
 
 def infer_learning_paths(achievements: List[Dict[str, Any]], skills: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    # Create skill lookup
-    skill_map = {s["id"]: s for s in skills}
-    
-    # Filter valid achievements with dates
-    valid_achs = []
-    for a in achievements:
-        d = parse_date(a.get("issued_date"))
-        if d:
-            valid_achs.append({
-                "doc": a,
-                "date": d,
-                "skill_ids": set(a.get("skill_ids", []))
-            })
-
-    if len(valid_achs) < 2:
+    if not achievements:
         return []
 
-    n = len(valid_achs)
-    adj = defaultdict(list)
+    n = len(achievements)
+    uf = UnionFind(n)
 
-    # Build graph edges: share 2+ skills AND within 540 days
+    # Build skill -> achievement indices
+    skill_to_indices = defaultdict(list)
+    for i, ach in enumerate(achievements):
+        for sid in ach.get("skill_ids", []):
+            skill_to_indices[str(sid)].append(i)
+
+    def parse_date(d):
+        if not d:
+            return datetime(2000, 1, 1)
+        if isinstance(d, str):
+            try:
+                return datetime.strptime(d[:10], "%Y-%m-%d")
+            except Exception:
+                return datetime(2000, 1, 1)
+        return datetime(d.year, d.month, d.day)
+
+    dates = [parse_date(a.get("issued_date", "2000-01-01")) for a in achievements]
+
+    # Count shared skills between achievement pairs within 540 days
+    shared_count = defaultdict(int)
+    for sid, indices in skill_to_indices.items():
+        for i in range(len(indices)):
+            for j in range(i + 1, len(indices)):
+                a, b = indices[i], indices[j]
+                if abs((dates[a] - dates[b]).days) <= 540:
+                    key = (min(a, b), max(a, b))
+                    shared_count[key] += 1
+
+    for (a, b), count in shared_count.items():
+        if count >= 2:
+            uf.union(a, b)
+
+    # Group into components
+    components = defaultdict(list)
     for i in range(n):
-        for j in range(i + 1, n):
-            shared_skills = valid_achs[i]["skill_ids"].intersection(valid_achs[j]["skill_ids"])
-            days_diff = abs((valid_achs[i]["date"] - valid_achs[j]["date"]).days)
-            
-            # Allow edge if 2+ shared skills or if 1 shared skill with <= 180 days gap
-            if (len(shared_skills) >= 2 and days_diff <= 540) or (len(shared_skills) >= 1 and days_diff <= 180):
-                adj[i].append(j)
-                adj[j].append(i)
+        components[uf.find(i)].append(i)
 
-    # Connected components using BFS
-    visited = set()
-    components = []
-
-    for i in range(n):
-        if i not in visited:
-            comp = []
-            queue = [i]
-            visited.add(i)
-            while queue:
-                curr = queue.pop(0)
-                comp.append(curr)
-                for neighbor in adj[curr]:
-                    if neighbor not in visited:
-                        visited.add(neighbor)
-                        queue.append(neighbor)
-            if len(comp) >= 2:
-                components.append(comp)
-
+    # Build paths from components with >= 2 achievements
+    skill_map = {str(s.get("id", s.get("_id"))): s for s in skills}
     paths = []
-    path_counter = 1
 
-    for comp in components:
-        comp_achs = [valid_achs[idx] for idx in comp]
-        comp_achs.sort(key=lambda x: x["date"])
+    for root, indices in components.items():
+        if len(indices) < 2:
+            continue
 
-        # Aggregate categories and skill counts
-        category_counts = defaultdict(int)
-        skill_counts = defaultdict(int)
-        all_skills = set()
+        component_achs = [achievements[i] for i in indices]
+        component_achs.sort(key=lambda a: parse_date(a.get("issued_date", "2000-01-01")))
 
-        for item in comp_achs:
-            for sid in item["skill_ids"]:
-                all_skills.add(sid)
-                skill_counts[sid] += 1
-                sk = skill_map.get(sid)
-                if sk and sk.get("category"):
-                    category_counts[sk["category"]] += 1
+        # Find dominant skill category
+        category_count = defaultdict(int)
+        skill_name_count = defaultdict(int)
+        for ach in component_achs:
+            for sid in ach.get("skill_ids", []):
+                s = skill_map.get(str(sid))
+                if s:
+                    cat = s.get("category", "General")
+                    category_count[cat] += 1
+                    skill_name_count[s.get("name", "")] += 1
 
-        top_category = "Specialized"
-        if category_counts:
-            top_category = max(category_counts.items(), key=lambda x: x[1])[0]
+        top_category = max(category_count, key=category_count.get) if category_count else "General"
+        top_skills = sorted(skill_name_count, key=skill_name_count.get, reverse=True)[:2]
 
-        top_skills = sorted(list(all_skills), key=lambda sid: skill_counts[sid], reverse=True)
-        top_skill_names = [skill_map[sid]["name"] for sid in top_skills if sid in skill_map]
+        start_date = parse_date(component_achs[0].get("issued_date", "2000-01-01"))
+        end_date = parse_date(component_achs[-1].get("issued_date", "2000-01-01"))
 
-        start_date = comp_achs[0]["date"]
-        end_date = comp_achs[-1]["date"]
-
-        anchors_str = ", ".join(top_skill_names[:2]) if top_skill_names else "core competencies"
         description = (
-            f"{len(comp_achs)} milestones from {start_date.year} to {end_date.year}, "
-            f"anchored in {anchors_str}"
+            f"{len(component_achs)} milestones from {start_date.year}"
+            + (f" to {end_date.year}" if end_date.year != start_date.year else "")
+            + (f", anchored in {' and '.join(top_skills)}" if top_skills else "")
         )
 
-        path_id = f"path-{path_counter}"
-        path_counter += 1
-
         paths.append({
-            "id": path_id,
+            "id": str(uuid.uuid4()),
             "name": f"{top_category} Track",
-            "milestone_count": len(comp_achs),
-            "achievements": [item["doc"] for item in comp_achs],
-            "primary_skill_ids": top_skills[:5],
-            "primary_skill_names": top_skill_names[:5],
+            "milestone_count": len(component_achs),
+            "achievements": component_achs,
+            "primary_skill_ids": list(skill_name_count.keys())[:3],
             "date_range": {
-                "start": start_date.isoformat(),
-                "end": end_date.isoformat()
+                "start": start_date.strftime("%Y-%m-%d"),
+                "end": end_date.strftime("%Y-%m-%d"),
             },
-            "description": description
+            "description": description,
         })
 
+    # Sort by milestone count descending, return top 6
     paths.sort(key=lambda p: p["milestone_count"], reverse=True)
     return paths[:6]

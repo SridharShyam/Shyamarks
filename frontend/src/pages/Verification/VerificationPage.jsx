@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { ShieldCheck, CheckCircle2, XCircle, Copy, Check, ArrowLeft, ExternalLink, Award } from 'lucide-react';
 import { api } from '../../services/api';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 // SHA-256 client-side fingerprint generator matching backend logic
 async function generateClientFingerprint(title, issuerName, issuedDate, credentialId = "") {
@@ -20,6 +21,7 @@ async function generateClientFingerprint(title, issuerName, issuedDate, credenti
 }
 
 export const VerificationPage = () => {
+  usePageTitle('Verify Achievement');
   const { fingerprint } = useParams();
   const [clientVerified, setClientVerified] = useState(null);
   const [recomputedFp, setRecomputedFp] = useState('');

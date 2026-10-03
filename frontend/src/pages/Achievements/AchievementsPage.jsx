@@ -5,6 +5,7 @@ import { api } from '../../services/api';
 import { AchievementCard } from '../../components/achievements/AchievementCard';
 import { AchievementCardSkeleton } from '../../components/ui/Skeleton';
 import { useDebounce } from '../../hooks/useDebounce';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 const ACHIEVEMENT_TYPES = [
   'Certification',
@@ -22,6 +23,7 @@ const ACHIEVEMENT_TYPES = [
 ];
 
 export const AchievementsPage = () => {
+  usePageTitle('Achievements');
   const [searchInput, setSearchInput] = useState('');
   const debouncedSearch = useDebounce(searchInput, 350);
   const [selectedType, setSelectedType] = useState('');

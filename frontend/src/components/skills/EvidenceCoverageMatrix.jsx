@@ -1,22 +1,36 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 
-const EVIDENCE_TYPES = [
-  'Certification',
-  'Course',
-  'Workshop',
-  'Training',
-  'Project',
-  'Internship',
-  'Virtual Experience',
-  'Hackathon',
-  'Competition',
-  'Award',
-  'Publication',
+const COLUMN_ORDER = [
+  "Certification", "Course", "Workshop", "Training",
+  "Project", "Internship", "Virtual Experience",
+  "Hackathon", "Competition", "Award", "Publication", "Other"
 ];
 
 export const EvidenceCoverageMatrix = ({ skills = [], achievements = [] }) => {
   const [hoveredCol, setHoveredCol] = useState(null);
+
+  // Derive columns dynamically
+  const activeTypes = new Set();
+  skills.forEach((skill) => {
+    if (skill.ccs?.breakdown) {
+      Object.keys(skill.ccs.breakdown).forEach((t) => activeTypes.add(t));
+    }
+    if (skill.evidence_breakdown) {
+      Object.keys(skill.evidence_breakdown).forEach((t) => activeTypes.add(t));
+    }
+  });
+  achievements.forEach((ach) => {
+    if (ach.type) activeTypes.add(ach.type);
+  });
+
+  const EVIDENCE_TYPES = [
+    ...COLUMN_ORDER.filter((t) => activeTypes.has(t)),
+    ...[...activeTypes].filter((t) => !COLUMN_ORDER.includes(t)),
+  ];
+  if (EVIDENCE_TYPES.length === 0) {
+    EVIDENCE_TYPES.push(...COLUMN_ORDER);
+  }
 
   // Sort skills by CCS score descending
   const sortedSkills = [...skills].sort((a, b) => (b.ccs || 0) - (a.ccs || 0));

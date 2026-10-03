@@ -22,6 +22,7 @@ import { ProjectsPage } from './pages/Projects/ProjectsPage';
 import { TimelinePage } from './pages/Timeline/TimelinePage';
 import { LearningPathsPage } from './pages/LearningPaths/LearningPathsPage';
 import { VerificationPage } from './pages/Verification/VerificationPage';
+import { SharePackPage } from './pages/SharePack/SharePackPage';
 
 // Studio Pages (formerly Admin)
 import { AdminLoginPage } from './pages/Admin/AdminLoginPage';
@@ -65,6 +66,7 @@ const AnimatedRoutes = () => {
             <Route path="/skills" element={<SkillsPage />} />
             <Route path="/learning-paths" element={<LearningPathsPage />} />
             <Route path="/verify/:fingerprint" element={<VerificationPage />} />
+            <Route path="/share/:token" element={<SharePackPage />} />
             <Route path="/projects" element={<ProjectsPage />} />
             <Route path="/timeline" element={<TimelinePage />} />
           </Route>

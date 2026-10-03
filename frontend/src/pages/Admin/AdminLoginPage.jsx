@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, AlertCircle, ArrowRight, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { FloatingLabelInput } from '../../components/ui/FloatingLabelInput';
+import { usePageTitle } from '../../hooks/usePageTitle';
 
 export const AdminLoginPage = () => {
+  usePageTitle('Studio Login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
