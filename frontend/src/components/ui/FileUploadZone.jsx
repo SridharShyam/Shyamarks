@@ -109,7 +109,19 @@ export const FileUploadZone = ({
                 <CheckCircle2 className="w-4 h-4" />
                 <span>File Uploaded Successfully</span>
               </div>
-              <p className="text-xs font-mono text-text-muted truncate mt-0.5">{uploadedFile.url}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-xs font-mono text-text-muted truncate">{uploadedFile.url}</p>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigator.clipboard.writeText(uploadedFile.url);
+                  }}
+                  className="px-2 py-0.5 text-[10px] bg-accent/10 text-accent rounded-md hover:bg-accent/20 transition-colors border border-accent/20 flex-shrink-0"
+                >
+                  Copy Link
+                </button>
+              </div>
             </div>
             <button
               type="button"
