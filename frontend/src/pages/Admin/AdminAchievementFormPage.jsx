@@ -404,8 +404,8 @@ export const AdminAchievementFormPage = () => {
           )}
         </div>
 
-        {/* File Upload Section */}
-        <div className="space-y-2 border-t border-b border-border py-4">
+        {/* File Upload & URL Section */}
+        <div className="space-y-4 border-t border-b border-border py-4">
           <label className={labelStyles}>
             Evidence File Upload (PDF, PNG, JPG, WEBP - Max 10MB)
           </label>
@@ -425,9 +425,34 @@ export const AdminAchievementFormPage = () => {
             {fileUrl && (
               <span className="text-xs font-mono text-emerald-400 flex items-center gap-1.5 truncate max-w-sm">
                 <Check className="w-4 h-4" />
-                <span>Uploaded: {fileUrl}</span>
+                <span>Uploaded</span>
               </span>
             )}
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="h-px bg-border flex-1"></div>
+            <span className="text-xs font-semibold text-text-muted">OR</span>
+            <div className="h-px bg-border flex-1"></div>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[11px] font-semibold text-text-secondary block">Paste Existing Cloudinary / Evidence URL</label>
+            <input
+              type="url"
+              value={fileUrl}
+              onChange={(e) => {
+                setFileUrl(e.target.value);
+                // Simple heuristic for file type if pasted manually
+                if (e.target.value.toLowerCase().endsWith('.pdf')) {
+                  setFileType('pdf');
+                } else {
+                  setFileType('image');
+                }
+              }}
+              placeholder="https://res.cloudinary.com/..."
+              className={inputStyles}
+            />
           </div>
         </div>
 
