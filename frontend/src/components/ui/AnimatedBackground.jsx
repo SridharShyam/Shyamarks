@@ -16,7 +16,7 @@ export const AnimatedBackground = () => {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute -top-32 left-1/4 w-[500px] h-[500px] rounded-full bg-accent/15 blur-[120px]"
+        className="absolute -top-32 left-1/4 w-[500px] h-[500px] rounded-full bg-accent/30 blur-[100px]"
       />
 
       <motion.div
@@ -30,7 +30,7 @@ export const AnimatedBackground = () => {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute top-1/3 -right-32 w-[600px] h-[600px] rounded-full bg-indigo-500/10 blur-[140px]"
+        className="absolute top-1/3 -right-32 w-[600px] h-[600px] rounded-full bg-indigo-500/25 blur-[120px]"
       />
 
       <motion.div
@@ -44,7 +44,7 @@ export const AnimatedBackground = () => {
           repeat: Infinity,
           ease: 'easeInOut',
         }}
-        className="absolute bottom-10 left-10 w-[450px] h-[450px] rounded-full bg-emerald-500/10 blur-[130px]"
+        className="absolute bottom-10 left-10 w-[450px] h-[450px] rounded-full bg-emerald-500/25 blur-[110px]"
       />
 
       {/* Cyber Grid SVG Overlay */}
