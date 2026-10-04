@@ -16,6 +16,7 @@ export const FileUploadZone = ({
     currentFileUrl ? { url: currentFileUrl, type: currentFileType || 'image' } : null
   );
   const [errorMsg, setErrorMsg] = useState(null);
+  const [isCopied, setIsCopied] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleFileSelect = async (file) => {
@@ -116,10 +117,16 @@ export const FileUploadZone = ({
                   onClick={(e) => {
                     e.stopPropagation();
                     navigator.clipboard.writeText(uploadedFile.url);
+                    setIsCopied(true);
+                    setTimeout(() => setIsCopied(false), 2000);
                   }}
-                  className="px-2 py-0.5 text-[10px] bg-accent/10 text-accent rounded-md hover:bg-accent/20 transition-colors border border-accent/20 flex-shrink-0"
+                  className={`px-2 py-0.5 text-[10px] rounded-md transition-colors border flex-shrink-0 ${
+                    isCopied 
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' 
+                      : 'bg-accent/10 text-accent hover:bg-accent/20 border-accent/20'
+                  }`}
                 >
-                  Copy Link
+                  {isCopied ? 'Copied!' : 'Copy Link'}
                 </button>
               </div>
             </div>
